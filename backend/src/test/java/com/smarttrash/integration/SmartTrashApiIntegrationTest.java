@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+<<<<<<< HEAD
 import org.springframework.http.HttpMethod;
+=======
+>>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,6 +58,7 @@ class SmartTrashApiIntegrationTest {
         assertThat(history.getBody()).contains("fillLevelPercent");
     }
 
+<<<<<<< HEAD
     @Test
     void collectionAllocationFlowWorks() {
         var allocation = restTemplate.exchange(url("/collections/allocations/bin-003"), HttpMethod.POST, null, String.class);
@@ -67,6 +71,8 @@ class SmartTrashApiIntegrationTest {
         assertThat(collections.getBody()).contains("bin-003");
     }
 
+=======
+>>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
     private String url(String path) {
         return "http://localhost:" + port + path;
     }

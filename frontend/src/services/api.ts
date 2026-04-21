@@ -2,8 +2,11 @@ import type {
   DashboardHistory,
   DashboardRegions,
   DashboardSummary,
+<<<<<<< HEAD
   CollectionAssignment,
   CollectionList,
+=======
+>>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
   LoginRequest,
   LoginResponse,
   SensorDetail,
@@ -64,6 +67,7 @@ export function fetchSensorHistory(id: string): Promise<SensorHistory> {
 export function fetchSensorLocations(): Promise<SensorLocations> {
   return request<SensorLocations>('/sensors/locations');
 }
+<<<<<<< HEAD
 
 export function fetchCollections(): Promise<CollectionList> {
   return request<CollectionList>('/collections');
@@ -74,3 +78,5 @@ export function allocateCollectionTeam(sensorId: string): Promise<CollectionAssi
     method: 'POST',
   });
 }
+=======
+>>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521

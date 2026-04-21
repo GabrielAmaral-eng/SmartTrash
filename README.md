@@ -79,14 +79,21 @@ docs/
 - `GET /sensors/{id}`
 - `GET /sensors/{id}/history`
 - `GET /sensors/locations`
+<<<<<<< HEAD
 - `GET /collections`
 - `POST /collections/allocations/{sensorId}`
+=======
+>>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 
 ## Decisões de Escopo
 
 - Não há banco de dados; o backend usa `InMemorySensorRepository`.
 - Não há ingestão real de sensores; os dados são gerados em `MockSensorData`.
+<<<<<<< HEAD
 - A alocação de equipe de coleta é mockada em memória e permitida apenas para lixeiras com mais de 70% de enchimento.
+=======
+- Não há comandos ou ações diretas em sensores.
+>>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 - O backend calcula o status a partir de `fillLevelPercent`.
 - A geolocalização é manual nos mocks, pois não vem do sensor.
 - A tela de mapa é um placeholder visual, mas já consome as localizações mockadas.
@@ -98,7 +105,11 @@ docs/
 - Ingestão real de leituras de sensores.
 - Autenticação real com usuários e autorização por perfil.
 - Mapa interativo com provedor geográfico.
+<<<<<<< HEAD
 - Rotas reais de coleta, despacho e atualização operacional persistida.
+=======
+- Alertas operacionais e rotas de coleta.
+>>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 - Painéis com filtros por período, região e status.
 
 ## Fluxo TDD Adotado
