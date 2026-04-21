@@ -7,6 +7,7 @@ Dashboard full stack para monitoramento de lixeiras inteligentes com dados mocka
 - Backend: Java 21, Spring Boot, Maven
 - Frontend: React, Vite, TypeScript, Tailwind CSS
 - Gráficos: Recharts
+- Mapa: Leaflet com OpenStreetMap
 - Testes: JUnit 5, Spring Boot Test, MockMvc, Vitest e Testing Library
 
 ## Como Rodar o Backend
@@ -79,24 +80,17 @@ docs/
 - `GET /sensors/{id}`
 - `GET /sensors/{id}/history`
 - `GET /sensors/locations`
-<<<<<<< HEAD
 - `GET /collections`
 - `POST /collections/allocations/{sensorId}`
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 
 ## Decisões de Escopo
 
-- Não há banco de dados; o backend usa `InMemorySensorRepository`.
+- Não há banco de dados; o backend usa repositórios em memória.
 - Não há ingestão real de sensores; os dados são gerados em `MockSensorData`.
-<<<<<<< HEAD
 - A alocação de equipe de coleta é mockada em memória e permitida apenas para lixeiras com mais de 70% de enchimento.
-=======
-- Não há comandos ou ações diretas em sensores.
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 - O backend calcula o status a partir de `fillLevelPercent`.
 - A geolocalização é manual nos mocks, pois não vem do sensor.
-- A tela de mapa é um placeholder visual, mas já consome as localizações mockadas.
+- A tela de mapa usa Leaflet e OpenStreetMap para renderizar os pontos mockados em São Paulo.
 - A autenticação é fake e retorna um token mockado sem persistência.
 
 ## Funcionalidades Futuras
@@ -104,12 +98,8 @@ docs/
 - Persistência em banco de dados.
 - Ingestão real de leituras de sensores.
 - Autenticação real com usuários e autorização por perfil.
-- Mapa interativo com provedor geográfico.
-<<<<<<< HEAD
 - Rotas reais de coleta, despacho e atualização operacional persistida.
-=======
-- Alertas operacionais e rotas de coleta.
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
+- Alertas operacionais avançados.
 - Painéis com filtros por período, região e status.
 
 ## Fluxo TDD Adotado
@@ -117,9 +107,9 @@ docs/
 Para esta fase, os testes foram escritos antes das implementações correspondentes:
 
 - Regra de classificação de status em `BinStatusClassifierTest`.
-- Serviços de dashboard e sensores em `DashboardServiceTest` e `SensorServiceTest`.
+- Serviços de dashboard, sensores e coleta.
 - Coerência dos mocks em `MockSensorDataTest`.
-- Endpoints com MockMvc em `AuthControllerTest`, `DashboardControllerTest` e `SensorControllerTest`.
+- Endpoints com MockMvc em controllers.
 - Fluxos integrados em `SmartTrashApiIntegrationTest`.
 - Frontend com testes de serviço, badge de status, login e dashboard.
 

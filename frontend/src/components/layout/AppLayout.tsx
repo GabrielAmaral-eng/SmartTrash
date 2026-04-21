@@ -1,17 +1,10 @@
-<<<<<<< HEAD
 import { BarChart3, LayoutDashboard, LogOut, Map, Trash2, Truck } from 'lucide-react';
-=======
-import { BarChart3, LayoutDashboard, LogOut, Map, Trash2 } from 'lucide-react';
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 import { NavLink, Outlet } from 'react-router-dom';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/sensores', label: 'Sensores', icon: Trash2 },
-<<<<<<< HEAD
   { to: '/coleta', label: 'Coleta', icon: Truck },
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
   { to: '/mapa', label: 'Mapa', icon: Map },
 ];
 

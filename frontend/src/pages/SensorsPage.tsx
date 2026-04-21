@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { CheckCircle2, MapPin, Ruler, Trash2, Truck } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -11,27 +10,12 @@ import type { SensorDetail, SensorHistory, SensorSummary } from '../types/api';
 
 export function SensorsPage() {
   const navigate = useNavigate();
-=======
-import { MapPin, Ruler, Trash2 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { SensorHistoryChart } from '../components/charts/SensorHistoryChart';
-import { SectionPanel } from '../components/ui/SectionPanel';
-import { StatusBadge } from '../components/ui/StatusBadge';
-import { fetchSensor, fetchSensorHistory, fetchSensors } from '../services/api';
-import type { SensorDetail, SensorHistory, SensorSummary } from '../types/api';
-
-export function SensorsPage() {
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
   const [sensors, setSensors] = useState<SensorSummary[]>([]);
   const [selectedId, setSelectedId] = useState<string>('');
   const [detail, setDetail] = useState<SensorDetail | null>(null);
   const [history, setHistory] = useState<SensorHistory | null>(null);
-<<<<<<< HEAD
   const [allocatedSensorIds, setAllocatedSensorIds] = useState<string[]>([]);
   const [allocating, setAllocating] = useState(false);
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -44,15 +28,12 @@ export function SensorsPage() {
   }, []);
 
   useEffect(() => {
-<<<<<<< HEAD
     fetchCollections()
       .then((response) => setAllocatedSensorIds(response.collections.map((collection) => collection.sensorId)))
       .catch(() => undefined);
   }, []);
 
   useEffect(() => {
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
     if (!selectedId) {
       return;
     }
@@ -64,7 +45,6 @@ export function SensorsPage() {
       .catch(() => setError('Não foi possível carregar os detalhes do sensor.'));
   }, [selectedId]);
 
-<<<<<<< HEAD
   function allocateTeam() {
     if (!detail || detail.fillLevelPercent <= 70 || allocating) {
       return;
@@ -79,8 +59,6 @@ export function SensorsPage() {
       .finally(() => setAllocating(false));
   }
 
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
   if (error) {
     return <p className="rounded-lg bg-danger/10 p-4 text-danger">{error}</p>;
   }
@@ -141,7 +119,6 @@ export function SensorsPage() {
                   </div>
                 </div>
 
-<<<<<<< HEAD
                 {detail.fillLevelPercent > 70 && (
                   <div className="mt-6 flex flex-col gap-3 rounded-lg border border-primary/20 bg-primaryDim/10 p-4 md:flex-row md:items-center md:justify-between">
                     <div>
@@ -160,8 +137,6 @@ export function SensorsPage() {
                   </div>
                 )}
 
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
                 <div className="mt-8 grid gap-4 md:grid-cols-3">
                   <Metric icon={Ruler} label="Distância" value={`${detail.distanceCm} cm`} />
                   <Metric icon={Trash2} label="Altura da lixeira" value={`${detail.binHeightCm} cm`} />

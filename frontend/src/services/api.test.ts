@@ -1,9 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-<<<<<<< HEAD
 import { allocateCollectionTeam, fetchCollections, fetchDashboardSummary, fetchSensors, login } from './api';
-=======
-import { fetchDashboardSummary, fetchSensors, login } from './api';
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 
 describe('api service', () => {
   afterEach(() => {
@@ -49,7 +45,6 @@ describe('api service', () => {
 
     expect(response.sensors[0].id).toBe('bin-001');
   });
-<<<<<<< HEAD
 
   it('fetches collection assignments from the API', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
@@ -81,6 +76,4 @@ describe('api service', () => {
       expect.objectContaining({ method: 'POST' }),
     );
   });
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 });

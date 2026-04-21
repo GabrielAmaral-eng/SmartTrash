@@ -1,8 +1,5 @@
 export type BinStatus = 'EMPTY' | 'ATTENTION' | 'FULL';
-<<<<<<< HEAD
 export type CollectionStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COLLECTED';
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 
 export interface LoginRequest {
   email: string;
@@ -89,7 +86,6 @@ export interface SensorLocation {
 export interface SensorLocations {
   locations: SensorLocation[];
 }
-<<<<<<< HEAD
 
 export interface CollectionAssignment {
   id: string;
@@ -107,5 +103,3 @@ export interface CollectionAssignment {
 export interface CollectionList {
   collections: CollectionAssignment[];
 }
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521

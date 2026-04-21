@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-=======
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 import type { BinStatus } from '../../types/api';
 
 const colors: Record<BinStatus, string> = {
@@ -17,13 +13,8 @@ const labels: Record<BinStatus, string> = {
   FULL: 'Cheias',
 };
 
-<<<<<<< HEAD
-const legendFormatter = (value: string) => (
-  <span className="text-xs font-bold text-white">{value}</span>
-);
+const legendFormatter = (value: string) => <span className="text-xs font-bold text-white">{value}</span>;
 
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
 export function StatusDonutChart({ data }: { data: Record<BinStatus, number> }) {
   const chartData = (Object.keys(data) as BinStatus[]).map((status) => ({
     name: labels[status],
@@ -41,15 +32,7 @@ export function StatusDonutChart({ data }: { data: Record<BinStatus, number> }) 
             ))}
           </Pie>
           <Tooltip />
-<<<<<<< HEAD
-          <Legend
-            formatter={legendFormatter}
-            iconType="circle"
-            verticalAlign="bottom"
-            wrapperStyle={{ paddingTop: 16 }}
-          />
-=======
->>>>>>> 8b2dcbe42d67f585adb5fa766588e67e21470521
+          <Legend formatter={legendFormatter} iconType="circle" verticalAlign="bottom" wrapperStyle={{ paddingTop: 16 }} />
         </PieChart>
       </ResponsiveContainer>
     </div>
