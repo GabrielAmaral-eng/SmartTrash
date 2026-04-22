@@ -12,12 +12,11 @@ export function AppLayout() {
   return (
     <div className="min-h-screen bg-background text-white">
       <aside className="fixed left-0 top-0 z-40 hidden h-full w-64 flex-col bg-panelLow px-4 py-6 lg:flex">
-        <div className="px-3">
-          <p className="text-xl font-black tracking-tight text-primary">Smart Trash</p>
-          <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">Waste Monitoring</p>
+        <div className="px-3 pt-2">
+          <img src="/smart-trash-logo.png" alt="Smart Trash" className="h-auto w-44 object-contain" />
         </div>
 
-        <nav className="mt-10 flex-1 space-y-2">
+        <nav className="mt-8 flex-1 space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
