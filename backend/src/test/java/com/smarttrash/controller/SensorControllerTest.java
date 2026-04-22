@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SensorController.class)
-@Import({SensorControllerTest.TestConfig.class, ApiExceptionHandler.class})
+@Import({SensorController.class, SensorControllerTest.TestConfig.class, ApiExceptionHandler.class})
 class SensorControllerTest {
 
     @Autowired

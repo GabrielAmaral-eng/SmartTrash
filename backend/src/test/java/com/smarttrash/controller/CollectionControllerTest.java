@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CollectionController.class)
-@Import({CollectionControllerTest.TestConfig.class, ApiExceptionHandler.class})
+@Import({CollectionController.class, CollectionControllerTest.TestConfig.class, ApiExceptionHandler.class})
 class CollectionControllerTest {
 
     @Autowired

@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(DashboardController.class)
-@Import(DashboardControllerTest.TestConfig.class)
+@Import({DashboardController.class, DashboardControllerTest.TestConfig.class})
 class DashboardControllerTest {
 
     @Autowired
