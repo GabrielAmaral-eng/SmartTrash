@@ -3,4 +3,8 @@ spring:
     name: smart-trash
 
 server:
-  port: 8080
+  port: ${PORT:8080}
+
+smarttrash:
+  cors:
+    allowed-origins: ${SMARTTRASH_ALLOWED_ORIGINS:http://localhost:*,http://127.0.0.1:*}

@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: smarttrash-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /dashboard/summary
+    envVars:
+      - key: SMARTTRASH_ALLOWED_ORIGINS
+        value: http://localhost:*,http://127.0.0.1:*,https://*.onrender.com
