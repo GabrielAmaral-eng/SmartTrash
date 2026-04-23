@@ -6,8 +6,6 @@ services:
     region: oregon
     branch: main
     autoDeploy: true
-    dockerContext: ./backend
-    dockerfilePath: ./backend/Dockerfile
     healthCheckPath: /dashboard/summary
     envVars:
       - key: SMARTTRASH_ALLOWED_ORIGINS
