@@ -17,7 +17,10 @@ describe('api service', () => {
     const response = await login({ email: 'op@local', password: 'demo' });
 
     expect(response.token).toBe('mock-token');
-    expect(fetch).toHaveBeenCalledWith('http://localhost:8080/auth/login', expect.objectContaining({ method: 'POST' }));
+    expect(fetch).toHaveBeenCalledWith(
+      'https://smarttrash-b7io.onrender.com/auth/login',
+      expect.objectContaining({ method: 'POST' }),
+    );
   });
 
   it('fetches dashboard summary through a structured endpoint', async () => {
@@ -57,7 +60,7 @@ describe('api service', () => {
     const response = await fetchCollections();
 
     expect(response.collections[0].sensorId).toBe('bin-003');
-    expect(fetch).toHaveBeenCalledWith('http://localhost:8080/collections', expect.any(Object));
+    expect(fetch).toHaveBeenCalledWith('https://smarttrash-b7io.onrender.com/collections', expect.any(Object));
   });
 
   it('posts a collection team allocation', async () => {
@@ -72,7 +75,7 @@ describe('api service', () => {
 
     expect(response.sensorId).toBe('bin-003');
     expect(fetch).toHaveBeenCalledWith(
-      'http://localhost:8080/collections/allocations/bin-003',
+      'https://smarttrash-b7io.onrender.com/collections/allocations/bin-003',
       expect.objectContaining({ method: 'POST' }),
     );
   });
