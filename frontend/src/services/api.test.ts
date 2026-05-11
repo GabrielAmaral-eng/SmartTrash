@@ -12,7 +12,7 @@ vi.mock('./supabase', () => ({
   },
 }));
 
-import { allocateCollectionTeam, fetchCollections, fetchCurrentProfile, fetchDashboardSummary, fetchScheduledRoute, fetchSensors, fetchUsers, login, updateUserRole } from './api';
+import { allocateCollectionTeam, fetchCollections, fetchCurrentProfile, fetchDashboardSummary, fetchScheduledRoute, fetchSensors, fetchUsers, updateUserRole } from './api';
 
 describe('api service', () => {
   beforeEach(() => {
@@ -22,18 +22,6 @@ describe('api service', () => {
   afterEach(() => {
     vi.restoreAllMocks();
     supabaseMocks.getSession.mockReset();
-  });
-
-  it('posts login credentials to the backend auth endpoint', async () => {
-    mockJsonResponse({ token: 'mock-token', user: { name: 'Operator', email: 'op@local', role: 'OPERATOR' } });
-
-    const response = await login({ email: 'op@local', password: 'demo' });
-
-    expect(response.token).toBe('mock-token');
-    expect(fetch).toHaveBeenCalledWith(
-      'https://smarttrash-b7io.onrender.com/auth/login',
-      expect.objectContaining({ method: 'POST' }),
-    );
   });
 
   it('sends the Supabase access token to backend requests', async () => {

@@ -43,7 +43,7 @@ As telas sempre consomem o backend. O frontend envia `Authorization: Bearer <acc
 
 ## Variaveis do Backend
 
-Por padrao o backend usa dados em memoria. Para fazer o backend consultar Supabase com o JWT recebido do frontend:
+O backend usa Supabase como fonte unica dos dados operacionais. Configure:
 
 ```bash
 SMARTTRASH_DATA_SOURCE=supabase
@@ -92,7 +92,6 @@ npm test
 
 ## Endpoints do Backend
 
-- `POST /auth/login`
 - `GET /auth/profile`
 - `GET /auth/users`
 - `PATCH /auth/users/{userId}/role`
@@ -112,9 +111,8 @@ npm test
 
 - O login funcional do frontend usa Supabase Auth com email/senha.
 - Dashboard, sensores, mapa, perfil e coletas passam pelo backend.
-- O backend em memoria foi mantido como fallback para comparacao, testes e desenvolvimento local.
-- Quando `SMARTTRASH_DATA_SOURCE=supabase`, o backend consulta `profiles`, `smart_bins`, `sensor_readings` e `collection_assignments` com o JWT recebido e RLS.
+- O backend consulta `profiles`, `smart_bins`, `sensor_readings` e `collection_assignments` com o JWT recebido e RLS.
 - A alocacao de equipe persiste em `collection_assignments` para lixeiras com mais de 70% de enchimento.
 - A rota programada diaria sai as 12h e inclui apenas lixeiras acima de 50% de enchimento. Se nao houver pontos elegiveis, a rota fica sem recolhimento.
 - As lixeiras foram posicionadas na regiao do Paraiso, entre a Faculdade ESEG e o Colegio Etapa.
-- A ingestao real de sensores ainda nao foi implementada; as migrations semeiam os dados iniciais equivalentes aos mocks.
+- A ingestao real de sensores ainda nao foi implementada; as migrations semeiam os dados iniciais no Supabase.

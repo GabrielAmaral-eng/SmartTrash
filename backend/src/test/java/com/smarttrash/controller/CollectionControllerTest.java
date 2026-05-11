@@ -1,9 +1,9 @@
 package com.smarttrash.controller;
 
 import com.smarttrash.config.ApiExceptionHandler;
-import com.smarttrash.repository.InMemoryCollectionRepository;
-import com.smarttrash.repository.InMemoryProfileRepository;
-import com.smarttrash.repository.InMemorySensorRepository;
+import com.smarttrash.testsupport.TestCollectionRepository;
+import com.smarttrash.testsupport.TestProfileRepository;
+import com.smarttrash.testsupport.TestSensorRepository;
 import com.smarttrash.service.AuthService;
 import com.smarttrash.service.BinStatusClassifier;
 import com.smarttrash.service.CollectionService;
@@ -67,27 +67,27 @@ class CollectionControllerTest {
         }
 
         @Bean
-        InMemorySensorRepository sensorRepository(BinStatusClassifier classifier) {
-            return new InMemorySensorRepository(classifier);
+        TestSensorRepository sensorRepository(BinStatusClassifier classifier) {
+            return new TestSensorRepository(classifier);
         }
 
         @Bean
-        InMemoryCollectionRepository collectionRepository(InMemorySensorRepository sensorRepository) {
-            return new InMemoryCollectionRepository(sensorRepository);
+        TestCollectionRepository collectionRepository(TestSensorRepository sensorRepository) {
+            return new TestCollectionRepository(sensorRepository);
         }
 
         @Bean
-        CollectionService collectionService(InMemoryCollectionRepository collectionRepository, InMemorySensorRepository sensorRepository) {
+        CollectionService collectionService(TestCollectionRepository collectionRepository, TestSensorRepository sensorRepository) {
             return new CollectionService(collectionRepository, sensorRepository);
         }
 
         @Bean
-        InMemoryProfileRepository profileRepository() {
-            return new InMemoryProfileRepository();
+        TestProfileRepository profileRepository() {
+            return new TestProfileRepository();
         }
 
         @Bean
-        AuthService authService(InMemoryProfileRepository profileRepository) {
+        AuthService authService(TestProfileRepository profileRepository) {
             return new AuthService(profileRepository);
         }
     }

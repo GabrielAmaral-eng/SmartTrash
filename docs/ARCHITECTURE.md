@@ -2,7 +2,7 @@
 
 ## Visao Geral
 
-O sistema monitora lixeiras inteligentes com dados mockados ou dados Supabase. A API expoe dashboard, listagem de sensores, detalhe, historico, localizacao geografica e alocacao de equipes de coleta para lixeiras acima do limite operacional.
+O sistema monitora lixeiras inteligentes com dados Supabase. A API expoe dashboard, listagem de sensores, detalhe, historico, localizacao geografica e alocacao de equipes de coleta para lixeiras acima do limite operacional.
 
 ## Backend
 
@@ -10,8 +10,7 @@ Camadas:
 
 - `controller`: expoe os endpoints REST.
 - `service`: concentra regras de negocio e agregacoes.
-- `repository`: abstrai a origem dos dados. O modo padrao usa memoria; `SMARTTRASH_DATA_SOURCE=supabase` ativa repositorios PostgREST.
-- `mock`: gera sensores, historico e localizacao manual.
+- `repository`: consulta as tabelas Supabase via PostgREST usando o JWT do usuario.
 - `model`: representa dominio interno.
 - `dto`: define respostas e entradas da API.
 - `exception` e `config`: tratamento de erros e CORS.
@@ -21,7 +20,7 @@ Regra de coleta:
 - `POST /collections/allocations/{sensorId}` cria ou retorna uma alocacao existente.
 - Apenas lixeiras com `fillLevelPercent > 70` podem receber equipe de coleta.
 - A alocacao retorna status, horario de saida, previsao de coleta, equipe responsavel e progresso.
-- `GET /collections` lista as coletas ativas. No modo memoria inclui um registro mockado inicial para demonstracao.
+- `GET /collections` lista as coletas ativas persistidas no banco.
 
 Supabase/RLS:
 

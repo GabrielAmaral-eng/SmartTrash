@@ -1,8 +1,8 @@
 package com.smarttrash.controller;
 
 import com.smarttrash.config.ApiExceptionHandler;
-import com.smarttrash.repository.InMemoryProfileRepository;
-import com.smarttrash.repository.InMemorySensorRepository;
+import com.smarttrash.testsupport.TestProfileRepository;
+import com.smarttrash.testsupport.TestSensorRepository;
 import com.smarttrash.service.AuthService;
 import com.smarttrash.service.BinStatusClassifier;
 import com.smarttrash.service.SensorService;
@@ -72,22 +72,22 @@ class SensorControllerTest {
         }
 
         @Bean
-        InMemorySensorRepository repository(BinStatusClassifier classifier) {
-            return new InMemorySensorRepository(classifier);
+        TestSensorRepository repository(BinStatusClassifier classifier) {
+            return new TestSensorRepository(classifier);
         }
 
         @Bean
-        SensorService sensorService(InMemorySensorRepository repository, BinStatusClassifier classifier) {
+        SensorService sensorService(TestSensorRepository repository, BinStatusClassifier classifier) {
             return new SensorService(repository, classifier);
         }
 
         @Bean
-        InMemoryProfileRepository profileRepository() {
-            return new InMemoryProfileRepository();
+        TestProfileRepository profileRepository() {
+            return new TestProfileRepository();
         }
 
         @Bean
-        AuthService authService(InMemoryProfileRepository profileRepository) {
+        AuthService authService(TestProfileRepository profileRepository) {
             return new AuthService(profileRepository);
         }
     }

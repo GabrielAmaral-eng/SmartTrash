@@ -1,6 +1,6 @@
 package com.smarttrash.service;
 
-import com.smarttrash.repository.InMemorySensorRepository;
+import com.smarttrash.testsupport.TestSensorRepository;
 
 final class TestServices {
 
@@ -9,7 +9,7 @@ final class TestServices {
 
     static SensorService sensorService() {
         var classifier = new BinStatusClassifier();
-        return new SensorService(new InMemorySensorRepository(classifier), classifier);
+        return new SensorService(new TestSensorRepository(classifier), classifier);
     }
 
     static DashboardService dashboardService() {

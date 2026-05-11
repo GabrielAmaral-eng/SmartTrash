@@ -1,7 +1,7 @@
 package com.smarttrash.service;
 
-import com.smarttrash.repository.InMemoryCollectionRepository;
-import com.smarttrash.repository.InMemorySensorRepository;
+import com.smarttrash.testsupport.TestCollectionRepository;
+import com.smarttrash.testsupport.TestSensorRepository;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,8 +10,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CollectionServiceTest {
 
     private final BinStatusClassifier classifier = new BinStatusClassifier();
-    private final InMemorySensorRepository sensorRepository = new InMemorySensorRepository(classifier);
-    private final CollectionService service = new CollectionService(new InMemoryCollectionRepository(sensorRepository), sensorRepository);
+    private final TestSensorRepository sensorRepository = new TestSensorRepository(classifier);
+    private final CollectionService service = new CollectionService(new TestCollectionRepository(sensorRepository), sensorRepository);
 
     @Test
     void listsMockedCollectionAssignments() {

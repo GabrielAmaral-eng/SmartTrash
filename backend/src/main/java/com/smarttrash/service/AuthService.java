@@ -1,8 +1,5 @@
 package com.smarttrash.service;
 
-import com.smarttrash.dto.AuthDtos.AuthUser;
-import com.smarttrash.dto.AuthDtos.LoginRequest;
-import com.smarttrash.dto.AuthDtos.LoginResponse;
 import com.smarttrash.dto.AuthDtos.ProfileResponse;
 import com.smarttrash.dto.AuthDtos.UserListResponse;
 import com.smarttrash.repository.ProfileRepository;
@@ -10,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -22,13 +17,6 @@ public class AuthService {
 
     public AuthService(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
-    }
-
-    public LoginResponse login(LoginRequest request) {
-        var rawToken = request.email() + ":smart-trash-mock";
-        var token = "mock-" + Base64.getUrlEncoder().withoutPadding()
-                .encodeToString(rawToken.getBytes(StandardCharsets.UTF_8));
-        return new LoginResponse(token, new AuthUser("Smart Trash Operator", request.email(), "OPERATOR"));
     }
 
     public Optional<ProfileResponse> currentProfile() {

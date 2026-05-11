@@ -1,4 +1,4 @@
-package com.smarttrash.mock;
+package com.smarttrash.testsupport;
 
 import com.smarttrash.model.SensorReading;
 import com.smarttrash.model.SmartBinSensor;
@@ -9,11 +9,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MockSensorData {
+public final class TestSensorData {
 
     private static final Instant BASE_TIME = Instant.parse("2026-04-20T12:00:00Z");
 
-    private MockSensorData() {
+    private TestSensorData() {
     }
 
     public static List<SmartBinSensor> createSensors(BinStatusClassifier classifier) {
@@ -31,16 +31,7 @@ public final class MockSensorData {
         );
     }
 
-    private static SmartBinSensor sensor(
-            BinStatusClassifier classifier,
-            String id,
-            String name,
-            String region,
-            double latitude,
-            double longitude,
-            double binHeightCm,
-            List<Double> fills
-    ) {
+    private static SmartBinSensor sensor(BinStatusClassifier classifier, String id, String name, String region, double latitude, double longitude, double binHeightCm, List<Double> fills) {
         var readings = readings(binHeightCm, fills);
         var latest = readings.getLast();
         return new SmartBinSensor(
@@ -65,15 +56,11 @@ public final class MockSensorData {
             var hoursBeforeBase = (long) (fills.size() - 1 - index) * 2;
             readings.add(new SensorReading(
                     BASE_TIME.minus(hoursBeforeBase, ChronoUnit.HOURS),
-                    distance(binHeightCm, fill),
+                    round(binHeightCm * (100 - fill) / 100),
                     fill
             ));
         }
         return List.copyOf(readings);
-    }
-
-    private static double distance(double binHeightCm, double fillLevelPercent) {
-        return round(binHeightCm * (100 - fillLevelPercent) / 100);
     }
 
     private static double round(double value) {

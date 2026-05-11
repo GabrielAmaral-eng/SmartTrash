@@ -1,4 +1,4 @@
-package com.smarttrash.mock;
+package com.smarttrash.testsupport;
 
 import com.smarttrash.model.BinStatus;
 import com.smarttrash.service.BinStatusClassifier;
@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MockSensorDataTest {
+class TestSensorDataTest {
 
     @Test
-    void mockedSensorsHaveCoherentDistanceFillAndStatusData() {
+    void testSensorsHaveCoherentDistanceFillAndStatusData() {
         var classifier = new BinStatusClassifier();
-        var sensors = MockSensorData.createSensors(classifier);
+        var sensors = TestSensorData.createSensors(classifier);
 
         assertThat(sensors).hasSizeGreaterThanOrEqualTo(6);
         assertThat(sensors).allSatisfy(sensor -> {

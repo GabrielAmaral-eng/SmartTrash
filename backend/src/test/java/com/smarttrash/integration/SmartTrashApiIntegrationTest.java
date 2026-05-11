@@ -1,15 +1,26 @@
 package com.smarttrash.integration;
 
+import com.smarttrash.repository.CollectionRepository;
+import com.smarttrash.repository.ProfileRepository;
+import com.smarttrash.repository.SensorRepository;
+import com.smarttrash.service.BinStatusClassifier;
+import com.smarttrash.testsupport.TestCollectionRepository;
+import com.smarttrash.testsupport.TestProfileRepository;
+import com.smarttrash.testsupport.TestSensorRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "smarttrash.data-source=test")
+@Import(SmartTrashApiIntegrationTest.TestConfig.class)
 class SmartTrashApiIntegrationTest {
 
     @LocalServerPort
@@ -78,5 +89,23 @@ class SmartTrashApiIntegrationTest {
 
     private String url(String path) {
         return "http://localhost:" + port + path;
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        SensorRepository sensorRepository(BinStatusClassifier classifier) {
+            return new TestSensorRepository(classifier);
+        }
+
+        @Bean
+        CollectionRepository collectionRepository(SensorRepository sensorRepository) {
+            return new TestCollectionRepository(sensorRepository);
+        }
+
+        @Bean
+        ProfileRepository profileRepository() {
+            return new TestProfileRepository();
+        }
     }
 }

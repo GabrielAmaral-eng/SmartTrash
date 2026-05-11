@@ -1,7 +1,9 @@
 package com.smarttrash.controller;
 
-import com.smarttrash.repository.InMemorySensorRepository;
+import com.smarttrash.testsupport.TestSensorRepository;
+import com.smarttrash.testsupport.TestProfileRepository;
 import com.smarttrash.service.BinStatusClassifier;
+import com.smarttrash.service.AuthService;
 import com.smarttrash.service.DashboardService;
 import com.smarttrash.service.SensorService;
 import org.junit.jupiter.api.Test;
@@ -55,18 +57,28 @@ class DashboardControllerTest {
         }
 
         @Bean
-        InMemorySensorRepository repository(BinStatusClassifier classifier) {
-            return new InMemorySensorRepository(classifier);
+        TestSensorRepository repository(BinStatusClassifier classifier) {
+            return new TestSensorRepository(classifier);
         }
 
         @Bean
-        SensorService sensorService(InMemorySensorRepository repository, BinStatusClassifier classifier) {
+        SensorService sensorService(TestSensorRepository repository, BinStatusClassifier classifier) {
             return new SensorService(repository, classifier);
         }
 
         @Bean
         DashboardService dashboardService(SensorService sensorService) {
             return new DashboardService(sensorService);
+        }
+
+        @Bean
+        TestProfileRepository profileRepository() {
+            return new TestProfileRepository();
+        }
+
+        @Bean
+        AuthService authService(TestProfileRepository profileRepository) {
+            return new AuthService(profileRepository);
         }
     }
 }

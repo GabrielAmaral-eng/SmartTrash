@@ -6,7 +6,7 @@ server:
   port: ${PORT:8080}
 
 smarttrash:
-  data-source: ${SMARTTRASH_DATA_SOURCE:memory}
+  data-source: ${SMARTTRASH_DATA_SOURCE:supabase}
   supabase:
     url: ${SUPABASE_URL:}
     publishable-key: ${SUPABASE_PUBLISHABLE_KEY:}

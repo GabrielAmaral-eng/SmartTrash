@@ -31,6 +31,7 @@ public class SensorController {
 
     @GetMapping("/locations")
     public SensorLocationsResponse locations() {
+        authService.requireRoles("SUPER_ADMIN", "ADMIN", "OPERATOR", "VIEWER");
         return sensorService.getLocations();
     }
 

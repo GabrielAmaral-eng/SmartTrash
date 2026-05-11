@@ -1,7 +1,5 @@
 package com.smarttrash.controller;
 
-import com.smarttrash.dto.AuthDtos.LoginRequest;
-import com.smarttrash.dto.AuthDtos.LoginResponse;
 import com.smarttrash.dto.AuthDtos.ProfileResponse;
 import com.smarttrash.dto.AuthDtos.UpdateUserRoleRequest;
 import com.smarttrash.dto.AuthDtos.UserListResponse;
@@ -11,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,11 +21,6 @@ public class AuthController {
 
     public AuthController(AuthService authService) {
         this.authService = authService;
-    }
-
-    @PostMapping("/login")
-    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
-        return authService.login(request);
     }
 
     @GetMapping("/profile")

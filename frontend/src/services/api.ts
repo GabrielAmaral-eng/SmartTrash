@@ -5,8 +5,6 @@ import type {
   DashboardHistory,
   DashboardRegions,
   DashboardSummary,
-  LoginRequest,
-  LoginResponse,
   Profile,
   ScheduledRoute,
   SensorDetail,
@@ -46,13 +44,6 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 async function currentAccessToken() {
   const { data } = await supabase.auth.getSession();
   return data.session?.access_token;
-}
-
-export function login(payload: LoginRequest): Promise<LoginResponse> {
-  return request<LoginResponse>('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
 }
 
 export function fetchCurrentProfile(): Promise<Profile | null> {

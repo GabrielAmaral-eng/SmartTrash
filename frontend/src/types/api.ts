@@ -2,20 +2,6 @@ export type BinStatus = 'EMPTY' | 'ATTENTION' | 'FULL';
 export type CollectionStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COLLECTED';
 export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'OPERATOR' | 'VIEWER';
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  user: {
-    name: string;
-    email: string;
-    role: string;
-  };
-}
-
 export interface Profile {
   id: string;
   email: string;
