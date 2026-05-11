@@ -1,11 +1,11 @@
-import { LocateFixed, Radar } from 'lucide-react';
+import { LocateFixed, Radar, Route } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from 'react-leaflet';
+import { CircleMarker, MapContainer, Polyline, Popup, TileLayer, useMap } from 'react-leaflet';
 import type { LatLngBoundsExpression } from 'leaflet';
 import { SectionPanel } from '../components/ui/SectionPanel';
 import { StatusBadge } from '../components/ui/StatusBadge';
-import { fetchSensorLocations } from '../services/api';
-import type { BinStatus, SensorLocation } from '../types/api';
+import { fetchScheduledRoute, fetchSensorLocations } from '../services/api';
+import type { BinStatus, ScheduledRoute, SensorLocation } from '../types/api';
 
 const statusColors: Record<BinStatus, string> = {
   EMPTY: '#5ccafc',
@@ -15,40 +15,44 @@ const statusColors: Record<BinStatus, string> = {
 
 const statusLabels: Record<BinStatus, string> = {
   EMPTY: 'Vazia',
-  ATTENTION: 'Atenção',
+  ATTENTION: 'Atencao',
   FULL: 'Cheia',
 };
 
-const saoPauloCenter: [number, number] = [-23.5558, -46.6396];
+const paraisoCenter: [number, number] = [-23.5774, -46.6401];
 
 export function MapPage() {
   const [locations, setLocations] = useState<SensorLocation[]>([]);
+  const [scheduledRoute, setScheduledRoute] = useState<ScheduledRoute | null>(null);
   const [selectedId, setSelectedId] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchSensorLocations()
-      .then((response) => {
-        setLocations(response.locations);
-        setSelectedId(response.locations[0]?.id ?? '');
+    Promise.all([fetchSensorLocations(), fetchScheduledRoute()])
+      .then(([locationsResponse, routeResponse]) => {
+        setLocations(locationsResponse.locations);
+        setScheduledRoute(routeResponse);
+        setSelectedId(routeResponse.stops[0]?.id ?? locationsResponse.locations[0]?.id ?? '');
       })
-      .catch(() => setError('Não foi possível carregar as localizações mockadas.'));
+      .catch(() => setError('Nao foi possivel carregar o mapa e a rota programada.'));
   }, []);
 
   const selected = locations.find((location) => location.id === selectedId) ?? locations[0];
+  const routePositions = scheduledRoute?.stops.map((stop) => [stop.latitude, stop.longitude] as [number, number]) ?? [];
   const mapBounds = useMemo<LatLngBoundsExpression | null>(() => {
-    if (!locations.length) {
-      return null;
-    }
-    return locations.map((location) => [location.latitude, location.longitude]);
-  }, [locations]);
+    const points = [
+      ...locations.map((location) => [location.latitude, location.longitude] as [number, number]),
+      ...routePositions,
+    ];
+    return points.length ? points : null;
+  }, [locations, routePositions]);
 
   return (
     <div className="space-y-6">
       <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <h1 className="text-4xl font-black tracking-tight text-white">Mapa</h1>
-          <p className="mt-2 text-sm text-muted">Mapa real de São Paulo com as lixeiras monitoradas por geolocalização.</p>
+          <p className="mt-2 text-sm text-muted">Mapa do Paraiso entre a Faculdade ESEG e o Colegio Etapa, com lixeiras proximas e rota programada.</p>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-white/5 bg-panel/70 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-muted">
           <LocateFixed size={16} className="text-secondary" />
@@ -61,13 +65,17 @@ export function MapPage() {
       <section className="grid gap-6 xl:grid-cols-12">
         <div className="xl:col-span-8">
           <div className="relative min-h-[620px] overflow-hidden rounded-lg border border-white/5 bg-black">
-            <MapContainer center={saoPauloCenter} zoom={12} scrollWheelZoom className="h-[620px] w-full">
+            <MapContainer center={paraisoCenter} zoom={16} scrollWheelZoom className="h-[620px] w-full">
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               {mapBounds && <FitMapBounds bounds={mapBounds} />}
+              {routePositions.length > 1 && (
+                <Polyline positions={routePositions} pathOptions={{ color: '#b6ff5c', opacity: 0.95, weight: 5 }} />
+              )}
               {locations.map((location) => {
+                const routeStop = scheduledRoute?.stops.find((stop) => stop.id === location.id);
                 const isSelected = selected?.id === location.id;
                 return (
                   <CircleMarker
@@ -90,6 +98,7 @@ export function MapPage() {
                         <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{location.id}</p>
                         <p className="mt-1 font-bold text-slate-950">{location.name}</p>
                         <p className="mt-2 text-sm text-slate-700">{location.fillLevelPercent}% de enchimento</p>
+                        {routeStop && <p className="mt-1 text-sm font-bold text-slate-950">Parada #{routeStop.order} da rota 12h</p>}
                       </div>
                     </Popup>
                   </CircleMarker>
@@ -104,6 +113,10 @@ export function MapPage() {
                   {statusLabels[status]}
                 </div>
               ))}
+              <div className="flex items-center gap-2 text-xs font-bold text-muted">
+                <span className="h-1 w-8 rounded-full bg-primary" />
+                Rota 12h
+              </div>
             </div>
           </div>
         </div>
@@ -128,6 +141,44 @@ export function MapPage() {
               </div>
             ) : (
               <p className="text-sm text-muted">Carregando pontos do mapa...</p>
+            )}
+          </SectionPanel>
+
+          <SectionPanel title="Rota programada">
+            {scheduledRoute ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <MapMetric label="Inicio" value={formatRouteTime(scheduledRoute.startTime)} />
+                  <MapMetric label="Corte" value={`>${scheduledRoute.thresholdPercent}%`} />
+                </div>
+                <div className="rounded-lg border border-white/5 bg-black/30 p-4">
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted">
+                    <Route size={15} className="text-primary" />
+                    {scheduledRoute.responsibleTeam}
+                  </div>
+                  <p className="mt-3 text-sm text-white">{scheduledRoute.message}</p>
+                </div>
+                <div className="space-y-2">
+                  {scheduledRoute.stops.map((stop) => (
+                    <button
+                      key={stop.id}
+                      type="button"
+                      onClick={() => setSelectedId(stop.id)}
+                      className="flex w-full items-center justify-between rounded-lg bg-panel/70 p-3 text-left transition hover:bg-white/5"
+                    >
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primaryDim/15 text-xs font-black text-primary">
+                          {stop.order}
+                        </span>
+                        <span className="truncate text-sm font-bold text-white">{stop.name}</span>
+                      </span>
+                      <span className="text-sm font-black text-primary">{stop.fillLevelPercent}%</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted">Carregando rota diaria das 12h...</p>
             )}
           </SectionPanel>
 
@@ -168,7 +219,7 @@ function FitMapBounds({ bounds }: { bounds: LatLngBoundsExpression }) {
   const map = useMap();
 
   useEffect(() => {
-    map.fitBounds(bounds, { padding: [42, 42], maxZoom: 13 });
+    map.fitBounds(bounds, { padding: [42, 42], maxZoom: 17 });
   }, [bounds, map]);
 
   return null;
@@ -181,4 +232,11 @@ function MapMetric({ label, value }: { label: string; value: string }) {
       <p className="mt-2 text-lg font-black text-white">{value}</p>
     </div>
   );
+}
+
+function formatRouteTime(value: string) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value));
 }

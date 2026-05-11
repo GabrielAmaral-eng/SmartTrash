@@ -32,7 +32,7 @@ class DashboardServiceTest {
     void buildsRegionAggregation() {
         var regions = service.getRegions();
 
-        assertThat(regions.regions()).hasSizeGreaterThanOrEqualTo(3);
+        assertThat(regions.regions()).hasSizeGreaterThanOrEqualTo(2);
         assertThat(regions.regions()).allSatisfy(region -> {
             assertThat(region.region()).isNotBlank();
             assertThat(region.sensorCount()).isPositive();

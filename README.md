@@ -1,14 +1,57 @@
 # Smart Trash
 
-Dashboard full stack para monitoramento de lixeiras inteligentes com dados mockados, autenticação fake e visual inspirado nos HTMLs fornecidos como referência de hierarquia e direção visual.
+Dashboard full stack para monitoramento de lixeiras inteligentes. A fase atual usa Supabase para autenticacao, banco de dados e persistencia operacional. O frontend autentica no Supabase, envia o JWT do usuario autenticado para o backend Spring Boot, e o backend consulta o Supabase respeitando RLS.
 
 ## Stack
 
 - Backend: Java 21, Spring Boot, Maven
 - Frontend: React, Vite, TypeScript, Tailwind CSS
-- Gráficos: Recharts
+- Banco/Auth: Supabase Auth + Postgres com RLS
+- Graficos: Recharts
 - Mapa: Leaflet com OpenStreetMap
 - Testes: JUnit 5, Spring Boot Test, MockMvc, Vitest e Testing Library
+
+## Supabase
+
+O projeto Supabase conectado e `Smart Trash` (`bpfqpfounhbbrhbikqxw`). As migrations locais ficam em `supabase/migrations/` e criam:
+
+- `profiles`: perfil ligado a `auth.users`, criado automaticamente por trigger.
+- `smart_bins`: cadastro e estado atual das lixeiras.
+- `sensor_readings`: historico de leituras por sensor.
+- `collection_assignments`: alocacoes de equipes de coleta.
+
+Todas as tabelas publicas estao com RLS ativo. As tabelas operacionais podem ser lidas apenas por usuarios autenticados, e novas coletas so podem ser criadas pelo proprio usuario autenticado.
+
+Roles do sistema:
+
+- `SUPER_ADMIN`: acesso total e configuracao de usuarios. Inicialmente reservado para `gabriel_41231@aluno.eseg.edu.br`.
+- `ADMIN`: acesso total as funcionalidades operacionais.
+- `OPERATOR`: visualizacao de sensores e alocacao de equipes.
+- `VIEWER`: acesso apenas ao dashboard e mapa.
+
+## Variaveis do Frontend
+
+Copie `frontend/.env.example` para `frontend/.env.local` se precisar trocar o projeto Supabase:
+
+```bash
+VITE_SUPABASE_URL=https://bpfqpfounhbbrhbikqxw.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_af7Dllj2Q5z0vYvsVPuxug_oV8Dcej7
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+As telas sempre consomem o backend. O frontend envia `Authorization: Bearer <access_token>` usando a sessao atual do Supabase.
+
+## Variaveis do Backend
+
+Por padrao o backend usa dados em memoria. Para fazer o backend consultar Supabase com o JWT recebido do frontend:
+
+```bash
+SMARTTRASH_DATA_SOURCE=supabase
+SUPABASE_URL=https://bpfqpfounhbbrhbikqxw.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_af7Dllj2Q5z0vYvsVPuxug_oV8Dcej7
+```
+
+O backend usa a publishable key apenas como `apikey` e repassa o token do usuario no header `Authorization`; assim as queries executam como `authenticated` e passam pelas policies RLS.
 
 ## Como Rodar o Backend
 
@@ -44,35 +87,16 @@ Frontend:
 
 ```bash
 cd frontend
-npm install
 npm test
 ```
 
-## Estrutura de Pastas
-
-```text
-backend/
-  src/main/java/com/smarttrash/
-    config/
-    controller/
-    dto/
-    exception/
-    mock/
-    model/
-    repository/
-    service/
-  src/test/java/com/smarttrash/
-frontend/
-  src/components/
-  src/pages/
-  src/services/
-  src/types/
-docs/
-```
-
-## Endpoints
+## Endpoints do Backend
 
 - `POST /auth/login`
+- `GET /auth/profile`
+- `GET /auth/users`
+- `PATCH /auth/users/{userId}/role`
+- `GET /health`
 - `GET /dashboard/summary`
 - `GET /dashboard/history`
 - `GET /dashboard/regions`
@@ -81,36 +105,16 @@ docs/
 - `GET /sensors/{id}/history`
 - `GET /sensors/locations`
 - `GET /collections`
+- `GET /collections/scheduled-route`
 - `POST /collections/allocations/{sensorId}`
 
-## Decisões de Escopo
+## Decisoes de Escopo
 
-- Não há banco de dados; o backend usa repositórios em memória.
-- Não há ingestão real de sensores; os dados são gerados em `MockSensorData`.
-- A alocação de equipe de coleta é mockada em memória e permitida apenas para lixeiras com mais de 70% de enchimento.
-- O backend calcula o status a partir de `fillLevelPercent`.
-- A geolocalização é manual nos mocks, pois não vem do sensor.
-- A tela de mapa usa Leaflet e OpenStreetMap para renderizar os pontos mockados em São Paulo.
-- A autenticação é fake e retorna um token mockado sem persistência.
-
-## Funcionalidades Futuras
-
-- Persistência em banco de dados.
-- Ingestão real de leituras de sensores.
-- Autenticação real com usuários e autorização por perfil.
-- Rotas reais de coleta, despacho e atualização operacional persistida.
-- Alertas operacionais avançados.
-- Painéis com filtros por período, região e status.
-
-## Fluxo TDD Adotado
-
-Para esta fase, os testes foram escritos antes das implementações correspondentes:
-
-- Regra de classificação de status em `BinStatusClassifierTest`.
-- Serviços de dashboard, sensores e coleta.
-- Coerência dos mocks em `MockSensorDataTest`.
-- Endpoints com MockMvc em controllers.
-- Fluxos integrados em `SmartTrashApiIntegrationTest`.
-- Frontend com testes de serviço, badge de status, login e dashboard.
-
-Uma funcionalidade só deve ser considerada pronta quando a suíte correspondente passar em um ambiente com JDK 21, Maven e dependências NPM instaladas.
+- O login funcional do frontend usa Supabase Auth com email/senha.
+- Dashboard, sensores, mapa, perfil e coletas passam pelo backend.
+- O backend em memoria foi mantido como fallback para comparacao, testes e desenvolvimento local.
+- Quando `SMARTTRASH_DATA_SOURCE=supabase`, o backend consulta `profiles`, `smart_bins`, `sensor_readings` e `collection_assignments` com o JWT recebido e RLS.
+- A alocacao de equipe persiste em `collection_assignments` para lixeiras com mais de 70% de enchimento.
+- A rota programada diaria sai as 12h e inclui apenas lixeiras acima de 50% de enchimento. Se nao houver pontos elegiveis, a rota fica sem recolhimento.
+- As lixeiras foram posicionadas na regiao do Paraiso, entre a Faculdade ESEG e o Colegio Etapa.
+- A ingestao real de sensores ainda nao foi implementada; as migrations semeiam os dados iniciais equivalentes aos mocks.

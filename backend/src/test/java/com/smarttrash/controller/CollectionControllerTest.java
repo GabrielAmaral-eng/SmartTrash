@@ -2,7 +2,9 @@ package com.smarttrash.controller;
 
 import com.smarttrash.config.ApiExceptionHandler;
 import com.smarttrash.repository.InMemoryCollectionRepository;
+import com.smarttrash.repository.InMemoryProfileRepository;
 import com.smarttrash.repository.InMemorySensorRepository;
+import com.smarttrash.service.AuthService;
 import com.smarttrash.service.BinStatusClassifier;
 import com.smarttrash.service.CollectionService;
 import org.junit.jupiter.api.Test;
@@ -42,6 +44,15 @@ class CollectionControllerTest {
     }
 
     @Test
+    void exposesScheduledRouteForBinsAboveThreshold() throws Exception {
+        mockMvc.perform(get("/collections/scheduled-route"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.thresholdPercent").value(50.0))
+                .andExpect(jsonPath("$.stops").isArray())
+                .andExpect(jsonPath("$.stops[0].order").value(1));
+    }
+
+    @Test
     void rejectsIneligibleSensorAllocation() throws Exception {
         mockMvc.perform(post("/collections/allocations/bin-001"))
                 .andExpect(status().isBadRequest())
@@ -68,6 +79,16 @@ class CollectionControllerTest {
         @Bean
         CollectionService collectionService(InMemoryCollectionRepository collectionRepository, InMemorySensorRepository sensorRepository) {
             return new CollectionService(collectionRepository, sensorRepository);
+        }
+
+        @Bean
+        InMemoryProfileRepository profileRepository() {
+            return new InMemoryProfileRepository();
+        }
+
+        @Bean
+        AuthService authService(InMemoryProfileRepository profileRepository) {
+            return new AuthService(profileRepository);
         }
     }
 }

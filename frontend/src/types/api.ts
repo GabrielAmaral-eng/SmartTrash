@@ -1,5 +1,6 @@
 export type BinStatus = 'EMPTY' | 'ATTENTION' | 'FULL';
 export type CollectionStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COLLECTED';
+export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'OPERATOR' | 'VIEWER';
 
 export interface LoginRequest {
   email: string;
@@ -13,6 +14,21 @@ export interface LoginResponse {
     email: string;
     role: string;
   };
+}
+
+export interface Profile {
+  id: string;
+  email: string;
+  fullName: string | null;
+  role: UserRole;
+}
+
+export interface UserList {
+  users: Profile[];
+}
+
+export interface UpdateUserRoleRequest {
+  role: UserRole;
 }
 
 export interface DashboardSummary {
@@ -102,4 +118,17 @@ export interface CollectionAssignment {
 
 export interface CollectionList {
   collections: CollectionAssignment[];
+}
+
+export interface ScheduledRouteStop extends SensorLocation {
+  order: number;
+}
+
+export interface ScheduledRoute {
+  startTime: string;
+  thresholdPercent: number;
+  responsibleTeam: string;
+  active: boolean;
+  message: string;
+  stops: ScheduledRouteStop[];
 }

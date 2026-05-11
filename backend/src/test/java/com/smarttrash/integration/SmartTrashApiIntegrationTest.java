@@ -42,7 +42,7 @@ class SmartTrashApiIntegrationTest {
         assertThat(detail.getStatusCode().is2xxSuccessful()).isTrue();
         assertThat(locations.getStatusCode().is2xxSuccessful()).isTrue();
         assertThat(sensors.getBody()).contains("bin-001");
-        assertThat(detail.getBody()).contains("Centro");
+        assertThat(detail.getBody()).contains("Paraiso");
         assertThat(locations.getBody()).contains("latitude");
     }
 
@@ -65,6 +65,15 @@ class SmartTrashApiIntegrationTest {
         assertThat(allocation.getBody()).contains("bin-003");
         assertThat(collections.getBody()).contains("responsibleTeam");
         assertThat(collections.getBody()).contains("bin-003");
+    }
+
+    @Test
+    void scheduledRouteFlowWorks() {
+        var route = restTemplate.getForEntity(url("/collections/scheduled-route"), String.class);
+
+        assertThat(route.getStatusCode().is2xxSuccessful()).isTrue();
+        assertThat(route.getBody()).contains("thresholdPercent");
+        assertThat(route.getBody()).contains("stops");
     }
 
     private String url(String path) {

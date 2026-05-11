@@ -37,15 +37,15 @@ export function DashboardPage() {
       <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <h1 className="text-4xl font-black tracking-tight text-white">Dashboard</h1>
-          <p className="mt-2 text-sm font-medium text-secondary">Feed mockado ativo para a fase de visualização.</p>
+          <p className="mt-2 text-sm font-medium text-secondary">Dados operacionais carregados do Supabase.</p>
         </div>
       </header>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Sensores" value={summary.totalSensors} helper="Lixeiras cadastradas no repositório in-memory." icon={Trash2} />
-        <KpiCard label="Ocupação média" value={`${summary.averageFillLevelPercent}%`} helper="Média calculada pelo backend sobre os mocks." icon={Gauge} />
+        <KpiCard label="Sensores" value={summary.totalSensors} helper="Lixeiras cadastradas no banco Supabase." icon={Trash2} />
+        <KpiCard label="Ocupação média" value={`${summary.averageFillLevelPercent}%`} helper="Média calculada a partir das tabelas de sensores." icon={Gauge} />
         <KpiCard label="Alertas" value={summary.totalAlerts} helper="Soma de lixeiras em atenção e cheias." icon={AlertTriangle} />
-        <KpiCard label="Regiões" value={regions.regions.length} helper="Localização manual cadastrada nos dados mockados." icon={Waves} />
+        <KpiCard label="Regiões" value={regions.regions.length} helper="Localização cadastrada nos registros do Supabase." icon={Waves} />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-12">

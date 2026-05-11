@@ -50,7 +50,7 @@ export function CollectionPage() {
       </header>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Coletas" value={summary.total} helper="Solicitações ativas e mockadas na API." icon={Truck} />
+        <KpiCard label="Coletas" value={summary.total} helper="Solicitações ativas persistidas no Supabase." icon={Truck} />
         <KpiCard label="Em rota" value={summary.inRoute} helper="Equipes já deslocadas para retirada." icon={Route} />
         <KpiCard label="Agendadas" value={summary.scheduled} helper="Coletas aguardando chegada ao ponto." icon={CalendarClock} />
         <KpiCard label="Progresso médio" value={`${summary.averageProgress}%`} helper="Média do andamento operacional." icon={CheckCircle2} />

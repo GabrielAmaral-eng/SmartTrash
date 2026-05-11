@@ -3,6 +3,7 @@ package com.smarttrash.repository;
 import com.smarttrash.model.CollectionAssignment;
 import com.smarttrash.model.CollectionStatus;
 import com.smarttrash.model.SmartBinSensor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
+@ConditionalOnProperty(name = "smarttrash.data-source", havingValue = "memory", matchIfMissing = true)
 public class InMemoryCollectionRepository implements CollectionRepository {
 
     private static final Instant BASE_TIME = Instant.parse("2026-04-20T13:00:00Z");

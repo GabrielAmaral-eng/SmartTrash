@@ -1,27 +1,35 @@
 # Arquitetura do Smart Trash
 
-## Visão Geral
+## Visao Geral
 
-O sistema monitora lixeiras inteligentes com dados mockados. A API expõe dashboard, listagem de sensores, detalhe, histórico, localização geográfica e alocação mockada de equipes de coleta para lixeiras acima do limite operacional.
+O sistema monitora lixeiras inteligentes com dados mockados ou dados Supabase. A API expoe dashboard, listagem de sensores, detalhe, historico, localizacao geografica e alocacao de equipes de coleta para lixeiras acima do limite operacional.
 
 ## Backend
 
 Camadas:
 
-- `controller`: expõe os endpoints REST.
-- `service`: concentra regras de negócio e agregações.
-- `repository`: abstrai a origem dos dados mockados.
-- `mock`: gera sensores, histórico e localização manual.
-- `model`: representa domínio interno.
+- `controller`: expoe os endpoints REST.
+- `service`: concentra regras de negocio e agregacoes.
+- `repository`: abstrai a origem dos dados. O modo padrao usa memoria; `SMARTTRASH_DATA_SOURCE=supabase` ativa repositorios PostgREST.
+- `mock`: gera sensores, historico e localizacao manual.
+- `model`: representa dominio interno.
 - `dto`: define respostas e entradas da API.
 - `exception` e `config`: tratamento de erros e CORS.
 
 Regra de coleta:
 
-- `POST /collections/allocations/{sensorId}` cria ou retorna uma alocação existente.
+- `POST /collections/allocations/{sensorId}` cria ou retorna uma alocacao existente.
 - Apenas lixeiras com `fillLevelPercent > 70` podem receber equipe de coleta.
-- A alocação é armazenada em memória e retorna status, horário de saída, previsão de coleta, equipe responsável e progresso.
-- `GET /collections` lista as coletas ativas e inclui um registro mockado inicial para demonstração.
+- A alocacao retorna status, horario de saida, previsao de coleta, equipe responsavel e progresso.
+- `GET /collections` lista as coletas ativas. No modo memoria inclui um registro mockado inicial para demonstracao.
+
+Supabase/RLS:
+
+- O frontend autentica com Supabase Auth e envia o `access_token` ao backend em `Authorization: Bearer <token>`.
+- O backend usa a publishable key como `apikey` e o JWT recebido como `Authorization`, fazendo as consultas ao PostgREST como o usuario autenticado.
+- Sem Bearer token, os repositorios Supabase retornam `401`, evitando consultas anonimas acidentais contra tabelas protegidas por RLS.
+- A role `SUPER_ADMIN` e aplicada apenas ao email `gabriel_41231@aluno.eseg.edu.br` nas migrations.
+- A tela `/usuarios` lista e altera roles somente para `SUPER_ADMIN`.
 
 Regra de status:
 
@@ -29,23 +37,36 @@ Regra de status:
 - `50..79%`: `ATTENTION`
 - `80..100%`: `FULL`
 
+Regras de acesso:
+
+- `SUPER_ADMIN`: acesso total e configuracao de usuarios.
+- `ADMIN`: acesso total as funcionalidades operacionais.
+- `OPERATOR`: sensores, coleta manual, dashboard e mapa.
+- `VIEWER`: dashboard e mapa.
+
+Rotas:
+
+- Manual: operadores, admins e super-admins podem alocar equipe em lixeiras com `fillLevelPercent > 70`.
+- Programada: todos os dias as 12h, a rota inclui somente lixeiras com `fillLevelPercent > 50`; se nao houver nenhuma, nao ha recolhimento.
+
 ## Frontend
 
 Camadas:
 
-- `services/api.ts`: comunicação com backend.
+- `services/api.ts`: comunicacao com o backend e envio do JWT da sessao Supabase.
 - `types/api.ts`: contratos TypeScript equivalentes aos DTOs.
-- `components/ui`: cards, painéis e status.
-- `components/charts`: gráficos Recharts.
+- `components/ui`: cards, paineis e status.
+- `components/charts`: graficos Recharts.
 - `components/layout`: layout compartilhado com sidebar e topbar.
 - `pages`: telas de login, dashboard, sensores, coleta e mapa.
 
 Mapa:
 
 - A tela de mapa usa `react-leaflet` e `leaflet`.
-- Os tiles são carregados do OpenStreetMap.
-- Os sensores são renderizados como marcadores circulares coloridos por status.
+- Os tiles sao carregados do OpenStreetMap.
+- Os sensores sao renderizados como marcadores circulares coloridos por status.
+- A visualizacao foca a regiao do Paraiso, aproximando Faculdade ESEG e Colegio Etapa, e desenha a rota programada quando ha paradas elegiveis.
 
-## Observação de Ambiente
+## Observacao de Ambiente
 
-O projeto foi configurado para Java 21 conforme requisito. Se o ambiente local tiver apenas Java 17 ou não tiver Maven, os testes do backend não conseguirão rodar até a instalação desses requisitos.
+O projeto foi configurado para Java 21 conforme requisito. Se o ambiente local tiver apenas Java 17 ou nao tiver Maven, os testes do backend nao conseguirao rodar ate a instalacao desses requisitos.

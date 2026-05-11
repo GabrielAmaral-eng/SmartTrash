@@ -1,7 +1,9 @@
 package com.smarttrash.controller;
 
 import com.smarttrash.config.ApiExceptionHandler;
+import com.smarttrash.repository.InMemoryProfileRepository;
 import com.smarttrash.repository.InMemorySensorRepository;
+import com.smarttrash.service.AuthService;
 import com.smarttrash.service.BinStatusClassifier;
 import com.smarttrash.service.SensorService;
 import org.junit.jupiter.api.Test;
@@ -77,6 +79,16 @@ class SensorControllerTest {
         @Bean
         SensorService sensorService(InMemorySensorRepository repository, BinStatusClassifier classifier) {
             return new SensorService(repository, classifier);
+        }
+
+        @Bean
+        InMemoryProfileRepository profileRepository() {
+            return new InMemoryProfileRepository();
+        }
+
+        @Bean
+        AuthService authService(InMemoryProfileRepository profileRepository) {
+            return new AuthService(profileRepository);
         }
     }
 }

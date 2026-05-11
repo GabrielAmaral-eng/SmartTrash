@@ -1,14 +1,24 @@
-import { BarChart3, LayoutDashboard, LogOut, Map, Trash2, Truck } from 'lucide-react';
-import { NavLink, Outlet } from 'react-router-dom';
-
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/sensores', label: 'Sensores', icon: Trash2 },
-  { to: '/coleta', label: 'Coleta', icon: Truck },
-  { to: '/mapa', label: 'Mapa', icon: Map },
-];
+import { BarChart3, LayoutDashboard, LogOut, Map, Settings, Trash2, Truck } from 'lucide-react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../auth/AuthProvider';
+import { canAccessCollections, canAccessSensors, canManageUsers } from '../../auth/roles';
 
 export function AppLayout() {
+  const navigate = useNavigate();
+  const { profile, signOut, user } = useAuth();
+  const navItems = [
+    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, visible: true },
+    { to: '/sensores', label: 'Sensores', icon: Trash2, visible: canAccessSensors(profile?.role) },
+    { to: '/coleta', label: 'Coleta', icon: Truck, visible: canAccessCollections(profile?.role) },
+    { to: '/mapa', label: 'Mapa', icon: Map, visible: true },
+    { to: '/usuarios', label: 'Usuarios', icon: Settings, visible: canManageUsers(profile?.role) },
+  ];
+
+  async function handleSignOut() {
+    await signOut();
+    navigate('/login', { replace: true });
+  }
+
   return (
     <div className="min-h-screen bg-background text-white">
       <aside className="fixed left-0 top-0 z-40 hidden h-full w-64 flex-col bg-panelLow px-4 py-6 lg:flex">
@@ -17,7 +27,7 @@ export function AppLayout() {
         </div>
 
         <nav className="mt-8 flex-1 space-y-2">
-          {navItems.map((item) => {
+          {navItems.filter((item) => item.visible).map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
@@ -44,22 +54,26 @@ export function AppLayout() {
             <BarChart3 size={14} />
             Fase atual
           </div>
-          <p className="mt-3 text-sm text-white">Visualização mockada, sem ingestão real de sensores.</p>
+          <p className="mt-3 text-sm text-white">Banco Supabase conectado com sensores, leituras e coletas.</p>
         </div>
       </aside>
 
       <header className="fixed left-0 right-0 top-0 z-30 flex h-16 items-center justify-between bg-background/90 px-5 backdrop-blur lg:left-64 lg:px-8">
         <div>
           <p className="text-sm font-bold text-white">Painel de monitoramento</p>
-          <p className="text-xs text-muted">Dados mockados sincronizados pela API</p>
+          <p className="text-xs text-muted">
+            {profile?.fullName ?? user?.email ?? 'Operador'} - {profile?.role ?? 'OPERATOR'}
+          </p>
         </div>
-        <NavLink
-          to="/login"
+        <button
+          aria-label="Sair"
           className="flex h-10 w-10 items-center justify-center rounded-lg bg-panel text-muted transition hover:text-white"
+          onClick={handleSignOut}
           title="Sair"
+          type="button"
         >
           <LogOut size={18} />
-        </NavLink>
+        </button>
       </header>
 
       <main className="min-h-screen pt-20 lg:ml-64">

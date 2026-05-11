@@ -67,7 +67,7 @@ export function SensorsPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-4xl font-black tracking-tight text-white">Sensores</h1>
-        <p className="mt-2 text-sm text-muted">Lista, detalhes e histórico das lixeiras inteligentes mockadas.</p>
+        <p className="mt-2 text-sm text-muted">Lista, detalhes e histórico das lixeiras inteligentes no Supabase.</p>
       </header>
 
       <div className="grid gap-6 xl:grid-cols-12">

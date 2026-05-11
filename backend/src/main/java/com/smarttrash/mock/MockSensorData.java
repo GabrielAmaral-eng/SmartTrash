@@ -18,16 +18,16 @@ public final class MockSensorData {
 
     public static List<SmartBinSensor> createSensors(BinStatusClassifier classifier) {
         return List.of(
-                sensor(classifier, "bin-001", "Lixeira Av. Paulista", "Centro", -23.5614, -46.6559, 120, List.of(18.0, 20.0, 25.0, 30.0)),
-                sensor(classifier, "bin-002", "Lixeira Rua Augusta", "Centro", -23.5558, -46.6581, 120, List.of(35.0, 40.0, 50.0, 55.0)),
-                sensor(classifier, "bin-003", "Lixeira Parque Ibirapuera", "Zona Sul", -23.5874, -46.6576, 120, List.of(50.0, 60.0, 75.0, 85.0)),
-                sensor(classifier, "bin-004", "Lixeira Vila Madalena", "Zona Oeste", -23.5503, -46.6920, 120, List.of(40.0, 45.0, 55.0, 60.0)),
-                sensor(classifier, "bin-005", "Lixeira Moema", "Zona Sul", -23.6035, -46.6614, 120, List.of(10.0, 15.0, 20.0, 25.0)),
-                sensor(classifier, "bin-006", "Lixeira Pinheiros", "Zona Oeste", -23.5670, -46.7010, 120, List.of(60.0, 70.0, 80.0, 90.0)),
-                sensor(classifier, "bin-007", "Lixeira Santana", "Zona Norte", -23.5056, -46.6253, 120, List.of(35.0, 40.0, 45.0, 50.0)),
-                sensor(classifier, "bin-008", "Lixeira Tatuapé", "Zona Leste", -23.5402, -46.5762, 120, List.of(20.0, 25.0, 30.0, 35.0)),
-                sensor(classifier, "bin-009", "Lixeira Praça Central", "Centro", -23.5505, -46.6333, 120, List.of(30.0, 35.0, 55.0, 65.0)),
-                sensor(classifier, "bin-010", "Lixeira Terminal Norte", "Zona Norte", -23.5401, -46.6202, 120, List.of(45.0, 50.0, 70.0, 80.0))
+                sensor(classifier, "bin-001", "Lixeira ESEG - Entrada Rua Vergueiro", "Paraiso", -23.5749, -46.6407, 120, List.of(18.0, 20.0, 25.0, 30.0)),
+                sensor(classifier, "bin-002", "Lixeira ESEG - Biblioteca", "Paraiso", -23.5753, -46.6405, 120, List.of(35.0, 40.0, 50.0, 55.0)),
+                sensor(classifier, "bin-003", "Lixeira Rua Vergueiro 1600", "Paraiso", -23.5759, -46.6403, 120, List.of(50.0, 60.0, 75.0, 85.0)),
+                sensor(classifier, "bin-004", "Lixeira Rua Apeninos", "Paraiso", -23.5766, -46.6412, 120, List.of(40.0, 45.0, 55.0, 60.0)),
+                sensor(classifier, "bin-005", "Lixeira Praca Rodrigues de Abreu", "Paraiso", -23.5772, -46.6401, 120, List.of(10.0, 15.0, 20.0, 25.0)),
+                sensor(classifier, "bin-006", "Lixeira Sistema Etapa", "Vila Mariana", -23.5782, -46.6398, 120, List.of(60.0, 70.0, 80.0, 90.0)),
+                sensor(classifier, "bin-007", "Lixeira Rua Vergueiro 1900", "Vila Mariana", -23.5788, -46.6396, 120, List.of(35.0, 40.0, 45.0, 50.0)),
+                sensor(classifier, "bin-008", "Lixeira Colegio Etapa - Entrada", "Vila Mariana", -23.5793, -46.6394, 120, List.of(20.0, 25.0, 30.0, 35.0)),
+                sensor(classifier, "bin-009", "Lixeira Colegio Etapa - Quadra", "Vila Mariana", -23.5797, -46.6391, 120, List.of(30.0, 35.0, 55.0, 65.0)),
+                sensor(classifier, "bin-010", "Lixeira Rua Topazio", "Vila Mariana", -23.5803, -46.6388, 120, List.of(45.0, 50.0, 70.0, 80.0))
         );
     }
 

@@ -3,12 +3,14 @@ package com.smarttrash.repository;
 import com.smarttrash.mock.MockSensorData;
 import com.smarttrash.model.SmartBinSensor;
 import com.smarttrash.service.BinStatusClassifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
+@ConditionalOnProperty(name = "smarttrash.data-source", havingValue = "memory", matchIfMissing = true)
 public class InMemorySensorRepository implements SensorRepository {
 
     private final List<SmartBinSensor> sensors;

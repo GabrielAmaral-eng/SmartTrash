@@ -2,8 +2,15 @@ package com.smarttrash.controller;
 
 import com.smarttrash.dto.AuthDtos.LoginRequest;
 import com.smarttrash.dto.AuthDtos.LoginResponse;
+import com.smarttrash.dto.AuthDtos.ProfileResponse;
+import com.smarttrash.dto.AuthDtos.UpdateUserRoleRequest;
+import com.smarttrash.dto.AuthDtos.UserListResponse;
 import com.smarttrash.service.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,5 +29,22 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ProfileResponse> profile() {
+        return authService.currentProfile()
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    @GetMapping("/users")
+    public UserListResponse users() {
+        return authService.listUsers();
+    }
+
+    @PatchMapping("/users/{userId}/role")
+    public ProfileResponse updateRole(@PathVariable String userId, @Valid @RequestBody UpdateUserRoleRequest request) {
+        return authService.updateUserRole(userId, request.role());
     }
 }

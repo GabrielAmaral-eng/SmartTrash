@@ -25,4 +25,25 @@ public final class CollectionDtos {
             int progressPercent
     ) {
     }
+
+    public record ScheduledRouteResponse(
+            Instant startTime,
+            double thresholdPercent,
+            String responsibleTeam,
+            boolean active,
+            String message,
+            List<ScheduledRouteStopResponse> stops
+    ) {
+    }
+
+    public record ScheduledRouteStopResponse(
+            int order,
+            String id,
+            String name,
+            double latitude,
+            double longitude,
+            com.smarttrash.model.BinStatus status,
+            double fillLevelPercent
+    ) {
+    }
 }

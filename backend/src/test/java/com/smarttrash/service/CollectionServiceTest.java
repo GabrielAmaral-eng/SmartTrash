@@ -31,7 +31,7 @@ class CollectionServiceTest {
 
         assertThat(assignment.sensorId()).isEqualTo("bin-003");
         assertThat(assignment.fillLevelPercent()).isGreaterThan(70);
-        assertThat(assignment.responsibleTeam()).contains("Sul");
+        assertThat(assignment.responsibleTeam()).isEqualTo("Equipe Operacional");
         assertThat(service.listCollections().collections())
                 .anySatisfy(collection -> assertThat(collection.sensorId()).isEqualTo("bin-003"));
     }
@@ -41,5 +41,14 @@ class CollectionServiceTest {
         assertThatThrownBy(() -> service.allocateTeam("bin-009"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("mais de 70%");
+    }
+
+    @Test
+    void buildsScheduledRouteOnlyForSensorsAboveFiftyPercent() {
+        var route = service.scheduledRoute();
+
+        assertThat(route.thresholdPercent()).isEqualTo(50);
+        assertThat(route.stops()).isNotEmpty();
+        assertThat(route.stops()).allSatisfy(stop -> assertThat(stop.fillLevelPercent()).isGreaterThan(50));
     }
 }

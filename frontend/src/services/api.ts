@@ -1,3 +1,4 @@
+import { supabase } from './supabase';
 import type {
   CollectionAssignment,
   CollectionList,
@@ -6,33 +7,65 @@ import type {
   DashboardSummary,
   LoginRequest,
   LoginResponse,
+  Profile,
+  ScheduledRoute,
   SensorDetail,
   SensorHistory,
   SensorList,
   SensorLocations,
+  UpdateUserRoleRequest,
+  UserList,
 } from '../types/api';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://smarttrash-b7io.onrender.com';
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = await currentAccessToken();
+  const headers = new Headers(init?.headers);
+  headers.set('Content-Type', 'application/json');
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...init?.headers,
-    },
     ...init,
+    headers,
   });
 
   if (!response.ok) {
     throw new Error(`API request failed: ${response.status}`);
   }
 
+  if (response.status === 204) {
+    return null as T;
+  }
+
   return response.json() as Promise<T>;
+}
+
+async function currentAccessToken() {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token;
 }
 
 export function login(payload: LoginRequest): Promise<LoginResponse> {
   return request<LoginResponse>('/auth/login', {
     method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function fetchCurrentProfile(): Promise<Profile | null> {
+  return request<Profile | null>('/auth/profile');
+}
+
+export function fetchUsers(): Promise<UserList> {
+  return request<UserList>('/auth/users');
+}
+
+export function updateUserRole(userId: string, payload: UpdateUserRoleRequest): Promise<Profile> {
+  return request<Profile>(`/auth/users/${userId}/role`, {
+    method: 'PATCH',
     body: JSON.stringify(payload),
   });
 }
@@ -67,6 +100,10 @@ export function fetchSensorLocations(): Promise<SensorLocations> {
 
 export function fetchCollections(): Promise<CollectionList> {
   return request<CollectionList>('/collections');
+}
+
+export function fetchScheduledRoute(): Promise<ScheduledRoute> {
+  return request<ScheduledRoute>('/collections/scheduled-route');
 }
 
 export function allocateCollectionTeam(sensorId: string): Promise<CollectionAssignment> {
