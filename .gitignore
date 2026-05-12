@@ -5,6 +5,7 @@ frontend/vite-dev.log
 frontend/vite-dev.err.log
 frontend/*.tsbuildinfo
 frontend/*.config.js
+!frontend/postcss.config.js
 frontend/*.config.d.ts
 frontend/.env.local
 .idea/
