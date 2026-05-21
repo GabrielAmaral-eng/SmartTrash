@@ -25,8 +25,10 @@ class SupabaseRestClient {
 
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
+    private final SupabaseProperties properties;
 
     SupabaseRestClient(SupabaseProperties properties, RestClient.Builder builder, ObjectMapper objectMapper) {
+        this.properties = properties;
         this.objectMapper = objectMapper;
         this.restClient = builder
                 .baseUrl(properties.restUrl())
@@ -49,6 +51,14 @@ class SupabaseRestClient {
     Consumer<HttpHeaders> userHeaders() {
         var token = currentBearerToken();
         return headers -> headers.setBearerAuth(token);
+    }
+
+    Consumer<HttpHeaders> serviceHeaders() {
+        var key = properties.requiredSecretKey();
+        return headers -> {
+            headers.set("apikey", key);
+            headers.setBearerAuth(key);
+        };
     }
 
     String currentUserId() {

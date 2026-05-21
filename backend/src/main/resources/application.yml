@@ -10,5 +10,12 @@ smarttrash:
   supabase:
     url: ${SUPABASE_URL:}
     publishable-key: ${SUPABASE_PUBLISHABLE_KEY:}
+    secret-key: ${SUPABASE_SECRET_KEY:${SUPABASE_SERVICE_ROLE_KEY:}}
   cors:
     allowed-origins: ${SMARTTRASH_ALLOWED_ORIGINS:http://localhost:*,http://127.0.0.1:*}
+
+mqtt:
+  enabled: ${MQTT_ENABLED:true}
+  broker-url: ${MQTT_BROKER_URL:tcp://localhost:1883}
+  client-id: ${MQTT_CLIENT_ID:smarttrash-backend}
+  topic: ${MQTT_TOPIC:eseg/smarttrash}

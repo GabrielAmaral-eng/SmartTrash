@@ -2,10 +2,12 @@ package com.smarttrash.integration;
 
 import com.smarttrash.repository.CollectionRepository;
 import com.smarttrash.repository.ProfileRepository;
+import com.smarttrash.repository.SensorReadingRepository;
 import com.smarttrash.repository.SensorRepository;
 import com.smarttrash.service.BinStatusClassifier;
 import com.smarttrash.testsupport.TestCollectionRepository;
 import com.smarttrash.testsupport.TestProfileRepository;
+import com.smarttrash.testsupport.TestSensorReadingRepository;
 import com.smarttrash.testsupport.TestSensorRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "smarttrash.data-source=test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"smarttrash.data-source=test", "mqtt.enabled=false"})
 @Import(SmartTrashApiIntegrationTest.TestConfig.class)
 class SmartTrashApiIntegrationTest {
 
@@ -106,6 +110,11 @@ class SmartTrashApiIntegrationTest {
         @Bean
         ProfileRepository profileRepository() {
             return new TestProfileRepository();
+        }
+
+        @Bean
+        SensorReadingRepository sensorReadingRepository() {
+            return new TestSensorReadingRepository(Set.of("bin-001"));
         }
     }
 }

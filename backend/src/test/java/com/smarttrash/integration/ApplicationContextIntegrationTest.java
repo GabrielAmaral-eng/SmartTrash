@@ -2,10 +2,12 @@ package com.smarttrash.integration;
 
 import com.smarttrash.repository.CollectionRepository;
 import com.smarttrash.repository.ProfileRepository;
+import com.smarttrash.repository.SensorReadingRepository;
 import com.smarttrash.repository.SensorRepository;
 import com.smarttrash.service.BinStatusClassifier;
 import com.smarttrash.testsupport.TestCollectionRepository;
 import com.smarttrash.testsupport.TestProfileRepository;
+import com.smarttrash.testsupport.TestSensorReadingRepository;
 import com.smarttrash.testsupport.TestSensorRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +15,9 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-@SpringBootTest(properties = "smarttrash.data-source=test")
+import java.util.Set;
+
+@SpringBootTest(properties = {"smarttrash.data-source=test", "mqtt.enabled=false"})
 @Import(ApplicationContextIntegrationTest.TestConfig.class)
 class ApplicationContextIntegrationTest {
 
@@ -36,6 +40,11 @@ class ApplicationContextIntegrationTest {
         @Bean
         ProfileRepository profileRepository() {
             return new TestProfileRepository();
+        }
+
+        @Bean
+        SensorReadingRepository sensorReadingRepository() {
+            return new TestSensorReadingRepository(Set.of("bin-001"));
         }
     }
 }
