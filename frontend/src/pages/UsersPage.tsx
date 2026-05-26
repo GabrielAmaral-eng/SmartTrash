@@ -11,13 +11,6 @@ const roleLabels: Record<UserRole, string> = {
   VIEWER: 'Visualizador',
 };
 
-const roleDescriptions: Record<UserRole, string> = {
-  SUPER_ADMIN: 'Configura usuarios e possui acesso total.',
-  ADMIN: 'Acesso total as funcionalidades operacionais.',
-  OPERATOR: 'Visualiza sensores e aloca equipes.',
-  VIEWER: 'Visualiza apenas dashboard e mapa.',
-};
-
 const editableRoles: UserRole[] = ['ADMIN', 'OPERATOR', 'VIEWER'];
 
 export function UsersPage() {
@@ -38,7 +31,7 @@ export function UsersPage() {
       const updated = await updateUserRole(user.id, { role });
       setUsers((current) => current.map((item) => (item.id === updated.id ? updated : item)));
     } catch {
-      setError('Nao foi possivel atualizar a role deste usuario.');
+      setError('Nao foi possivel atualizar o perfil deste usuario.');
     } finally {
       setSavingUserId('');
     }
@@ -48,8 +41,7 @@ export function UsersPage() {
     <div className="space-y-6">
       <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-white">Usuarios</h1>
-          <p className="mt-2 text-sm text-muted">Configuracao de roles restrita ao Super-Admin.</p>
+          <h1 className="text-4xl font-black tracking-tight text-white">Usuários</h1>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-white/5 bg-panel/70 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-muted">
           <ShieldCheck size={16} className="text-secondary" />
@@ -71,7 +63,6 @@ export function UsersPage() {
                   <div className="min-w-0">
                     <h2 className="truncate text-lg font-black text-white">{user.fullName ?? user.email}</h2>
                     <p className="mt-1 truncate text-sm text-muted">{user.email}</p>
-                    <p className="mt-2 text-xs font-semibold text-secondary">{roleDescriptions[user.role]}</p>
                   </div>
                 </div>
 
@@ -81,7 +72,7 @@ export function UsersPage() {
                   </span>
                 ) : (
                   <label className="block min-w-52">
-                    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-muted">Role</span>
+                    <span className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-muted">Perfil</span>
                     <select
                       className="w-full rounded-lg border border-white/5 bg-panel px-4 py-3 text-sm font-bold text-white outline-none transition focus:border-primary"
                       disabled={savingUserId === user.id}
