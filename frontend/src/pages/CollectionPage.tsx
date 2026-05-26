@@ -24,7 +24,7 @@ export function CollectionPage() {
   useEffect(() => {
     fetchCollections()
       .then((response) => setCollections(response.collections))
-      .catch(() => setError('Não foi possível carregar as coletas. Confirme se o backend está em execução.'));
+      .catch(() => setError('Não foi possível carregar as coletas. Tente novamente em instantes.'));
   }, []);
 
   const summary = useMemo(() => {
@@ -46,14 +46,13 @@ export function CollectionPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-4xl font-black tracking-tight text-white">Coleta</h1>
-        <p className="mt-2 text-sm text-muted">Acompanhamento das equipes alocadas para lixeiras acima do limite operacional.</p>
       </header>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Coletas" value={summary.total} helper="Solicitações ativas persistidas no Supabase." icon={Truck} />
-        <KpiCard label="Em rota" value={summary.inRoute} helper="Equipes já deslocadas para retirada." icon={Route} />
-        <KpiCard label="Agendadas" value={summary.scheduled} helper="Coletas aguardando chegada ao ponto." icon={CalendarClock} />
-        <KpiCard label="Progresso médio" value={`${summary.averageProgress}%`} helper="Média do andamento operacional." icon={CheckCircle2} />
+        <KpiCard label="Coletas" value={summary.total} icon={Truck} />
+        <KpiCard label="Em rota" value={summary.inRoute} icon={Route} />
+        <KpiCard label="Agendadas" value={summary.scheduled} icon={CalendarClock} />
+        <KpiCard label="Progresso médio" value={`${summary.averageProgress}%`} icon={CheckCircle2} />
       </div>
 
       <SectionPanel title="Progresso das coletas">

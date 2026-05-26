@@ -1,17 +1,26 @@
-import { BarChart3, LayoutDashboard, LogOut, Map, Settings, Trash2, Truck } from 'lucide-react';
+import { LayoutDashboard, LogOut, Map, Settings, Trash2, Truck } from 'lucide-react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthProvider';
 import { canAccessCollections, canAccessSensors, canManageUsers } from '../../auth/roles';
+import type { UserRole } from '../../types/api';
+
+const roleLabels: Record<UserRole, string> = {
+  SUPER_ADMIN: 'Super-Admin',
+  ADMIN: 'Admin',
+  OPERATOR: 'Operador',
+  VIEWER: 'Visualizador',
+};
 
 export function AppLayout() {
   const navigate = useNavigate();
   const { profile, signOut, user } = useAuth();
+  const currentRole = profile?.role ? roleLabels[profile.role] : 'Operador';
   const navItems = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, visible: true },
     { to: '/sensores', label: 'Sensores', icon: Trash2, visible: canAccessSensors(profile?.role) },
     { to: '/coleta', label: 'Coleta', icon: Truck, visible: canAccessCollections(profile?.role) },
     { to: '/mapa', label: 'Mapa', icon: Map, visible: true },
-    { to: '/usuarios', label: 'Usuarios', icon: Settings, visible: canManageUsers(profile?.role) },
+    { to: '/usuarios', label: 'Usuários', icon: Settings, visible: canManageUsers(profile?.role) },
   ];
 
   async function handleSignOut() {
@@ -48,21 +57,13 @@ export function AppLayout() {
             );
           })}
         </nav>
-
-        <div className="rounded-lg bg-panel p-4">
-          <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted">
-            <BarChart3 size={14} />
-            Fase atual
-          </div>
-          <p className="mt-3 text-sm text-white">Banco Supabase conectado com sensores, leituras e coletas.</p>
-        </div>
       </aside>
 
       <header className="fixed left-0 right-0 top-0 z-30 flex h-16 items-center justify-between bg-background/90 px-5 backdrop-blur lg:left-64 lg:px-8">
         <div>
           <p className="text-sm font-bold text-white">Painel de monitoramento</p>
           <p className="text-xs text-muted">
-            {profile?.fullName ?? user?.email ?? 'Operador'} - {profile?.role ?? 'OPERATOR'}
+            {profile?.fullName ?? user?.email ?? 'Operador'} - {currentRole}
           </p>
         </div>
         <button

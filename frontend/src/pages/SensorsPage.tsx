@@ -1,12 +1,20 @@
 import { CheckCircle2, MapPin, Ruler, Trash2, Truck } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SensorHistoryChart } from '../components/charts/SensorHistoryChart';
 import { SectionPanel } from '../components/ui/SectionPanel';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { allocateCollectionTeam, fetchCollections, fetchSensor, fetchSensorHistory, fetchSensors } from '../services/api';
-import type { SensorDetail, SensorHistory, SensorSummary } from '../types/api';
+import type { SensorDetail, SensorHistory, SensorReading, SensorSummary } from '../types/api';
+
+type HistoryRange = 'today' | 'week' | 'month';
+
+const historyRangeOptions: Array<{ value: HistoryRange; label: string }> = [
+  { value: 'today', label: 'Hoje' },
+  { value: 'week', label: 'Nesta semana' },
+  { value: 'month', label: 'Neste mês' },
+];
 
 export function SensorsPage() {
   const navigate = useNavigate();
@@ -14,6 +22,7 @@ export function SensorsPage() {
   const [selectedId, setSelectedId] = useState<string>('');
   const [detail, setDetail] = useState<SensorDetail | null>(null);
   const [history, setHistory] = useState<SensorHistory | null>(null);
+  const [historyRange, setHistoryRange] = useState<HistoryRange>('today');
   const [allocatedSensorIds, setAllocatedSensorIds] = useState<string[]>([]);
   const [allocating, setAllocating] = useState(false);
   const [error, setError] = useState('');
@@ -45,6 +54,10 @@ export function SensorsPage() {
       .catch(() => setError('Não foi possível carregar os detalhes do sensor.'));
   }, [selectedId]);
 
+  const filteredHistory = useMemo(() => {
+    return filterHistory(history?.points ?? [], historyRange);
+  }, [history?.points, historyRange]);
+
   function allocateTeam() {
     if (!detail || detail.fillLevelPercent <= 70 || allocating) {
       return;
@@ -67,7 +80,6 @@ export function SensorsPage() {
     <div className="space-y-6">
       <header>
         <h1 className="text-4xl font-black tracking-tight text-white">Sensores</h1>
-        <p className="mt-2 text-sm text-muted">Lista, detalhes e histórico das lixeiras inteligentes no Supabase.</p>
       </header>
 
       <div className="grid gap-6 xl:grid-cols-12">
@@ -123,7 +135,6 @@ export function SensorsPage() {
                   <div className="mt-6 flex flex-col gap-3 rounded-lg border border-primary/20 bg-primaryDim/10 p-4 md:flex-row md:items-center md:justify-between">
                     <div>
                       <p className="text-sm font-bold text-white">Coleta recomendada</p>
-                      <p className="mt-1 text-xs text-muted">Disponível para lixeiras com mais de 70% de enchimento.</p>
                     </div>
                     <button
                       type="button"
@@ -145,7 +156,22 @@ export function SensorsPage() {
               </div>
 
               <SectionPanel title="Histórico de enchimento">
-                <SensorHistoryChart data={history?.points ?? []} />
+                <div className="mb-5 inline-flex max-w-full rounded-lg border border-white/5 bg-black p-1">
+                  {historyRangeOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      aria-pressed={historyRange === option.value}
+                      onClick={() => setHistoryRange(option.value)}
+                      className={`rounded-md px-4 py-2 text-sm font-black transition ${
+                        historyRange === option.value ? 'bg-primary text-background' : 'text-muted hover:text-white'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                <SensorHistoryChart data={filteredHistory} />
               </SectionPanel>
             </>
           ) : (
@@ -155,6 +181,36 @@ export function SensorsPage() {
       </div>
     </div>
   );
+}
+
+function filterHistory(points: SensorReading[], range: HistoryRange) {
+  const now = new Date();
+  const start = getRangeStart(now, range);
+  const nowTime = now.getTime();
+  const startTime = start.getTime();
+
+  return points.filter((point) => {
+    const timestamp = new Date(point.timestamp).getTime();
+    return timestamp >= startTime && timestamp <= nowTime;
+  });
+}
+
+function getRangeStart(date: Date, range: HistoryRange) {
+  if (range === 'month') {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  }
+
+  const start = startOfDay(date);
+  if (range === 'week') {
+    const daysFromMonday = (start.getDay() + 6) % 7;
+    start.setDate(start.getDate() - daysFromMonday);
+  }
+
+  return start;
+}
+
+function startOfDay(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
 function Metric({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {

@@ -42,13 +42,13 @@ export function LoginPage() {
     try {
       if (mode === 'sign-in') {
         await signIn(email, password);
-        setMessage('Acesso liberado pelo Supabase.');
+        setMessage('Acesso liberado.');
         window.setTimeout(() => navigate(redirectTo, { replace: true }), 250);
         return;
       }
 
       if (signUpRateLimited) {
-        setMessage('Criacao de conta pausada por limite do Supabase. Aguarde alguns minutos ou entre com uma conta ja criada.');
+        setMessage('Criacao de conta pausada. Aguarde alguns minutos ou entre com uma conta ja criada.');
         return;
       }
 
@@ -80,7 +80,6 @@ export function LoginPage() {
         <section className="rounded-lg border border-white/5 bg-panel/80 p-8 shadow-glow backdrop-blur">
           <div className="mb-7 text-center">
             <h1 className="text-2xl font-black tracking-tight">Acesso operacional</h1>
-            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted">Supabase Auth</p>
           </div>
 
           <div className="mb-6 grid grid-cols-2 rounded-lg border border-white/5 bg-black p-1">
@@ -104,7 +103,7 @@ export function LoginPage() {
                 setMode('sign-up');
                 setMessage(
                   signUpRateLimited
-                    ? 'Criacao de conta pausada por limite do Supabase. Aguarde alguns minutos ou entre com uma conta ja criada.'
+                    ? 'Criacao de conta pausada. Aguarde alguns minutos ou entre com uma conta ja criada.'
                     : '',
                 );
               }}
@@ -181,10 +180,6 @@ export function LoginPage() {
 
           {message && <p className="mt-5 text-center text-sm font-semibold text-secondary">{message}</p>}
         </section>
-
-        <p className="mt-6 text-center text-[11px] font-bold uppercase tracking-[0.18em] text-muted">
-          Banco conectado - acesso seguro
-        </p>
       </div>
     </main>
   );

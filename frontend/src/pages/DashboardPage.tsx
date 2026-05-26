@@ -21,7 +21,7 @@ export function DashboardPage() {
         setHistory(historyData);
         setRegions(regionsData);
       })
-      .catch(() => setError('Não foi possível carregar o dashboard. Confirme se o backend está em execução.'));
+      .catch(() => setError('Não foi possível carregar o dashboard. Tente novamente em instantes.'));
   }, []);
 
   if (error) {
@@ -37,15 +37,14 @@ export function DashboardPage() {
       <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <h1 className="text-4xl font-black tracking-tight text-white">Dashboard</h1>
-          <p className="mt-2 text-sm font-medium text-secondary">Dados operacionais carregados do Supabase.</p>
         </div>
       </header>
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Sensores" value={summary.totalSensors} helper="Lixeiras cadastradas no banco Supabase." icon={Trash2} />
-        <KpiCard label="Ocupação média" value={`${summary.averageFillLevelPercent}%`} helper="Média calculada a partir das tabelas de sensores." icon={Gauge} />
-        <KpiCard label="Alertas" value={summary.totalAlerts} helper="Soma de lixeiras em atenção e cheias." icon={AlertTriangle} />
-        <KpiCard label="Regiões" value={regions.regions.length} helper="Localização cadastrada nos registros do Supabase." icon={Waves} />
+        <KpiCard label="Sensores" value={summary.totalSensors} icon={Trash2} />
+        <KpiCard label="Ocupação média" value={`${summary.averageFillLevelPercent}%`} icon={Gauge} />
+        <KpiCard label="Alertas" value={summary.totalAlerts} icon={AlertTriangle} />
+        <KpiCard label="Regiões" value={regions.regions.length} icon={Waves} />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-12">

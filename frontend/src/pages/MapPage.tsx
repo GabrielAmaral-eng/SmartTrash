@@ -5,7 +5,26 @@ import type { LatLngBoundsExpression } from 'leaflet';
 import { SectionPanel } from '../components/ui/SectionPanel';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { fetchScheduledRoute, fetchSensorLocations } from '../services/api';
-import type { BinStatus, ScheduledRoute, SensorLocation } from '../types/api';
+import type { BinStatus, ScheduledRoute, ScheduledRouteStop, SensorLocation } from '../types/api';
+
+type MapPoint = [number, number];
+
+interface RoadRoute {
+  positions: MapPoint[];
+  distanceMeters: number;
+  durationSeconds: number;
+}
+
+interface OsrmRouteResponse {
+  code: string;
+  routes?: Array<{
+    distance: number;
+    duration: number;
+    geometry?: {
+      coordinates?: Array<[number, number]>;
+    };
+  }>;
+}
 
 const statusColors: Record<BinStatus, string> = {
   EMPTY: '#5ccafc',
@@ -24,6 +43,9 @@ const paraisoCenter: [number, number] = [-23.5774, -46.6401];
 export function MapPage() {
   const [locations, setLocations] = useState<SensorLocation[]>([]);
   const [scheduledRoute, setScheduledRoute] = useState<ScheduledRoute | null>(null);
+  const [roadRoute, setRoadRoute] = useState<RoadRoute | null>(null);
+  const [roadRouteLoading, setRoadRouteLoading] = useState(false);
+  const [roadRouteError, setRoadRouteError] = useState('');
   const [selectedId, setSelectedId] = useState('');
   const [error, setError] = useState('');
 
@@ -38,21 +60,54 @@ export function MapPage() {
   }, []);
 
   const selected = locations.find((location) => location.id === selectedId) ?? locations[0];
-  const routePositions = scheduledRoute?.stops.map((stop) => [stop.latitude, stop.longitude] as [number, number]) ?? [];
+  const routeStops = useMemo(() => scheduledRoute?.stops ?? [], [scheduledRoute]);
+  const routeCoordinateKey = useMemo(() => routeStops.map((stop) => `${stop.longitude},${stop.latitude}`).join(';'), [routeStops]);
+  const directRoutePositions = useMemo(() => routeStops.map((stop) => [stop.latitude, stop.longitude] as MapPoint), [routeStops]);
+  const displayedRoutePositions = roadRoute?.positions.length ? roadRoute.positions : directRoutePositions;
+
+  useEffect(() => {
+    if (routeStops.length < 2) {
+      setRoadRoute(null);
+      setRoadRouteError('');
+      setRoadRouteLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    setRoadRouteLoading(true);
+    setRoadRouteError('');
+
+    fetchRoadRoute(routeStops, controller.signal)
+      .then(setRoadRoute)
+      .catch((fetchError) => {
+        if (fetchError instanceof DOMException && fetchError.name === 'AbortError') {
+          return;
+        }
+        setRoadRoute(null);
+        setRoadRouteError('Rota por vias indisponível. Exibindo trajeto direto.');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setRoadRouteLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [routeCoordinateKey, routeStops]);
+
   const mapBounds = useMemo<LatLngBoundsExpression | null>(() => {
     const points = [
       ...locations.map((location) => [location.latitude, location.longitude] as [number, number]),
-      ...routePositions,
+      ...displayedRoutePositions,
     ];
     return points.length ? points : null;
-  }, [locations, routePositions]);
+  }, [displayedRoutePositions, locations]);
 
   return (
     <div className="space-y-6">
       <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <h1 className="text-4xl font-black tracking-tight text-white">Mapa</h1>
-          <p className="mt-2 text-sm text-muted">Mapa do Paraiso entre a Faculdade ESEG e o Colegio Etapa, com lixeiras proximas e rota programada.</p>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-white/5 bg-panel/70 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-muted">
           <LocateFixed size={16} className="text-secondary" />
@@ -71,8 +126,21 @@ export function MapPage() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
               {mapBounds && <FitMapBounds bounds={mapBounds} />}
-              {routePositions.length > 1 && (
-                <Polyline positions={routePositions} pathOptions={{ color: '#b6ff5c', opacity: 0.95, weight: 5 }} />
+              {displayedRoutePositions.length > 1 && (
+                <>
+                  <Polyline positions={displayedRoutePositions} pathOptions={{ color: '#0d0e10', opacity: 0.85, weight: 9 }} />
+                  <Polyline
+                    positions={displayedRoutePositions}
+                    pathOptions={{
+                      color: '#b6ff5c',
+                      dashArray: roadRoute ? undefined : '8 8',
+                      lineCap: 'round',
+                      lineJoin: 'round',
+                      opacity: 0.95,
+                      weight: 5,
+                    }}
+                  />
+                </>
               )}
               {locations.map((location) => {
                 const routeStop = scheduledRoute?.stops.find((stop) => stop.id === location.id);
@@ -115,7 +183,7 @@ export function MapPage() {
               ))}
               <div className="flex items-center gap-2 text-xs font-bold text-muted">
                 <span className="h-1 w-8 rounded-full bg-primary" />
-                Rota 12h
+                Rota nas vias
               </div>
             </div>
           </div>
@@ -150,7 +218,11 @@ export function MapPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <MapMetric label="Inicio" value={formatRouteTime(scheduledRoute.startTime)} />
                   <MapMetric label="Corte" value={`>${scheduledRoute.thresholdPercent}%`} />
+                  {roadRoute && <MapMetric label="Distância" value={formatDistance(roadRoute.distanceMeters)} />}
+                  {roadRoute && <MapMetric label="Tempo" value={formatDuration(roadRoute.durationSeconds)} />}
                 </div>
+                {roadRouteLoading && <p className="rounded-lg bg-black/30 p-4 text-sm text-muted">Calculando rota...</p>}
+                {roadRouteError && <p className="rounded-lg bg-danger/10 p-4 text-sm text-danger">{roadRouteError}</p>}
                 <div className="rounded-lg border border-white/5 bg-black/30 p-4">
                   <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted">
                     <Route size={15} className="text-primary" />
@@ -215,6 +287,34 @@ export function MapPage() {
   );
 }
 
+async function fetchRoadRoute(stops: ScheduledRouteStop[], signal: AbortSignal): Promise<RoadRoute> {
+  const coordinates = stops.map((stop) => `${stop.longitude},${stop.latitude}`).join(';');
+  const params = new URLSearchParams({
+    overview: 'full',
+    geometries: 'geojson',
+    steps: 'false',
+  });
+  const response = await fetch(`https://router.project-osrm.org/route/v1/driving/${coordinates}?${params}`, { signal });
+
+  if (!response.ok) {
+    throw new Error('Route request failed');
+  }
+
+  const data = (await response.json()) as OsrmRouteResponse;
+  const route = data.routes?.[0];
+  const coordinatesGeometry = route?.geometry?.coordinates;
+
+  if (data.code !== 'Ok' || !route || !coordinatesGeometry?.length) {
+    throw new Error('Route not found');
+  }
+
+  return {
+    distanceMeters: route.distance,
+    durationSeconds: route.duration,
+    positions: coordinatesGeometry.map(([longitude, latitude]) => [latitude, longitude] as MapPoint),
+  };
+}
+
 function FitMapBounds({ bounds }: { bounds: LatLngBoundsExpression }) {
   const map = useMap();
 
@@ -239,4 +339,17 @@ function formatRouteTime(value: string) {
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(value));
+}
+
+function formatDistance(value: number) {
+  if (value < 1000) {
+    return `${Math.round(value)} m`;
+  }
+
+  return `${new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 }).format(value / 1000)} km`;
+}
+
+function formatDuration(value: number) {
+  const minutes = Math.max(1, Math.round(value / 60));
+  return `${minutes} min`;
 }

@@ -2,10 +2,19 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import type { SensorReading } from '../../types/api';
 
 export function SensorHistoryChart({ data }: { data: SensorReading[] }) {
+  const spansMultipleDays = data.some((point) => !isSameDay(point.timestamp, data[0]?.timestamp));
   const chartData = data.map((point) => ({
-    time: new Date(point.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    time: formatChartTime(point.timestamp, spansMultipleDays),
     enchimento: point.fillLevelPercent,
   }));
+
+  if (!data.length) {
+    return (
+      <div className="flex h-72 items-center justify-center rounded-lg border border-white/5 bg-black/20 text-sm font-semibold text-muted">
+        Sem leituras nesse período.
+      </div>
+    );
+  }
 
   return (
     <div className="h-72">
@@ -19,5 +28,29 @@ export function SensorHistoryChart({ data }: { data: SensorReading[] }) {
         </AreaChart>
       </ResponsiveContainer>
     </div>
+  );
+}
+
+function formatChartTime(timestamp: string, includeDate: boolean) {
+  return new Date(timestamp).toLocaleString('pt-BR', {
+    day: includeDate ? '2-digit' : undefined,
+    month: includeDate ? '2-digit' : undefined,
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function isSameDay(left?: string, right?: string) {
+  if (!left || !right) {
+    return true;
+  }
+
+  const leftDate = new Date(left);
+  const rightDate = new Date(right);
+
+  return (
+    leftDate.getFullYear() === rightDate.getFullYear() &&
+    leftDate.getMonth() === rightDate.getMonth() &&
+    leftDate.getDate() === rightDate.getDate()
   );
 }

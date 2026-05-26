@@ -40,7 +40,7 @@ describe('LoginPage', () => {
 
     await waitFor(() => {
       expect(authMocks.signIn).toHaveBeenCalledWith('operator@smarttrash.local', 'demo123');
-      expect(screen.getByText('Acesso liberado pelo Supabase.')).toBeInTheDocument();
+      expect(screen.getByText('Acesso liberado.')).toBeInTheDocument();
     });
   });
 
