@@ -34,8 +34,8 @@ Roles do sistema:
 Copie `frontend/.env.example` para `frontend/.env.local` se precisar trocar o projeto Supabase:
 
 ```bash
-VITE_SUPABASE_URL=https://bpfqpfounhbbrhbikqxw.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_af7Dllj2Q5z0vYvsVPuxug_oV8Dcej7
+VITE_SUPABASE_URL= URL
+VITE_SUPABASE_PUBLISHABLE_KEY= KEY
 VITE_API_BASE_URL=http://localhost:8080
 ```
 
@@ -47,8 +47,8 @@ O backend usa Supabase como fonte unica dos dados operacionais. Configure:
 
 ```bash
 SMARTTRASH_DATA_SOURCE=supabase
-SUPABASE_URL=https://bpfqpfounhbbrhbikqxw.supabase.co
-SUPABASE_PUBLISHABLE_KEY=sb_publishable_af7Dllj2Q5z0vYvsVPuxug_oV8Dcej7
+SUPABASE_URL= URL
+SUPABASE_PUBLISHABLE_KEY= KEY
 ```
 
 O backend usa a publishable key apenas como `apikey` e repassa o token do usuario no header `Authorization`; assim as queries executam como `authenticated` e passam pelas policies RLS.
@@ -116,3 +116,8 @@ npm test
 - A rota programada diaria sai as 12h e inclui apenas lixeiras acima de 50% de enchimento. Se nao houver pontos elegiveis, a rota fica sem recolhimento.
 - As lixeiras foram posicionadas na regiao do Paraiso, entre a Faculdade ESEG e o Colegio Etapa.
 - A ingestao real de sensores ainda nao foi implementada; as migrations semeiam os dados iniciais no Supabase.
+
+## URL do Frontend
+```bash
+https://smarttrash-1.onrender.com/
+```
